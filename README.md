@@ -70,6 +70,7 @@ results or independent student-authorship claims are recorded here.
 
 <!-- Three or four sentences: what a user asks for, and what they get back. -->
 
+FitFindr takes a clothing request like "vintage graphic tee under $30, size M" and searches a local mock catalog of thrift listings. The code pulls the size, price, and description out of the query, then filters listings on price and size and ranks the rest by how many words match. If nothing matches, it says so and stops. If something matches, it picks the top result and asks Gemini for outfit advice using that listing and your wardrobe, then turns the advice into a text caption.
 
 
 ---
