@@ -272,7 +272,9 @@ Complete commands and actual outputs, including all three repeated captions:
 
 ## How I Used AI
 
-I had Codex utilize review and auditing alongside tracing the outputs and aligning files to be as efficient for instructions as possible. I made sure to abide by the instructions fully and be able to complete every milestone with the review of AI. I also made sure to fully accomplish all goals and fully audit the code with AI to ensure there aren’t errors.
+I asked Codex to build the three tools and planning loop and test the implementation. It produced the code, specifications, sample outputs, and five milestone commits. My code review and further revisions are still pending.
+
+I also asked Codex to check that the README included a full query/output and three individual tool tests. It compared those examples with the saved logs and confirmed they were already present. I supplied the four-sentence app description, which Codex inserted without changing my wording.
 
 <!-- ═══════════════════════ UNIT 4 — THE TEST ═══════════════════════
 
