@@ -164,34 +164,63 @@ recorded in the following milestones. No stretch feature is being declared.
 
 ## Sample Run
 
-<!-- Two things go here.
-
-     1. One FULL query and its output, pasted as text.
-     2. Your three per-tool terminal tests — the command and what it printed. -->
-
 **One full query**
 
-```
-$ python app.py ask '...'
-
-```
+Pending Milestone 5 agent wiring. The Milestone 1 unbuilt-starter baseline is
+recorded separately and is not a working full-agent sample.
 
 **The three tools, tested one at a time**
 
-```
-$ python -c "from tools import search_listings; print(search_listings('graphic tee', max_price=30))"
+Actual terminal commands and output from Milestone 4, before wiring `run_agent`:
 
+### Search tool
+
+```text
+$ python -c 'from tools import search_listings; print(search_listings("graphic tee", max_price=30))'
+[{'id': 'lst_002', 'title': 'Y2K Baby Tee — Butterfly Print', 'description': 'Super cute early 2000s baby tee with butterfly graphic. Fitted crop length. Tag says medium but fits like a small.', 'category': 'tops', 'style_tags': ['y2k', 'vintage', 'graphic tee', 'cottagecore'], 'size': 'S/M', 'condition': 'excellent', 'price': 18.0, 'colors': ['white', 'pink', 'purple'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_006', 'title': 'Graphic Tee — 2003 Tour Bootleg Style', 'description': 'Vintage-style bootleg tee with faded graphic. Slightly boxy fit. 100% cotton, soft and worn-in.', 'category': 'tops', 'style_tags': ['graphic tee', 'vintage', 'grunge', 'streetwear', 'band tee'], 'size': 'L', 'condition': 'good', 'price': 24.0, 'colors': ['black'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_017', 'title': 'Mesh Long-Sleeve Top — Black', 'description': 'Sheer black mesh long-sleeve. Great for layering under a graphic tee or over a bralette. Stretchy material, fits true to size.', 'category': 'tops', 'style_tags': ['y2k', 'grunge', 'goth', 'layering'], 'size': 'S/M', 'condition': 'excellent', 'price': 15.0, 'colors': ['black'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_033', 'title': 'Vintage Band Tee — Faded Grey', 'description': 'Faded grey band-style tee with distressed graphic. Crew neck. Fits boxy. Well-loved but no holes or major damage.', 'category': 'tops', 'style_tags': ['vintage', 'grunge', 'band tee', 'graphic tee', 'streetwear'], 'size': 'L', 'condition': 'fair', 'price': 19.0, 'colors': ['grey', 'charcoal'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_011', 'title': 'Low-Rise Cargo Pants — Khaki', 'description': 'Y2K era low-rise cargo pants. Lots of pockets. Khaki color, slightly distressed at the hems. Great for layering with a long tee.', 'category': 'bottoms', 'style_tags': ['y2k', 'cargo', '2000s', 'streetwear'], 'size': 'W29', 'condition': 'fair', 'price': 27.0, 'colors': ['khaki', 'tan'], 'brand': None, 'platform': 'poshmark'}, {'id': 'lst_015', 'title': 'Vintage Graphic Hoodie — Faded Black', 'description': 'Faded black pullover hoodie with barely-visible vintage graphic on the chest. Cozy interior. Some pilling but adds to the worn-in look.', 'category': 'tops', 'style_tags': ['vintage', 'grunge', 'graphic', 'streetwear'], 'size': 'L', 'condition': 'fair', 'price': 26.0, 'colors': ['black', 'charcoal'], 'brand': None, 'platform': 'depop'}]
 ```
 
-```
-$ python -c "from tools import suggest_outfit; ..."
+### Outfit tool
 
+```text
+$ python -c 'from tools import suggest_outfit; from utils.data_loader import get_example_wardrobe, load_listings; print(suggest_outfit(load_listings()[0], get_example_wardrobe()))'
+**Outfit 1: Casual Streetwear**
+* **New Item:** Levi's Vintage Levi's 501 Jeans — Medium Wash
+* **Owned Pieces:** White ribbed tank top, Chunky white sneakers, Black crossbody bag
+
+**Why it works:** The fitted white ribbed tank balances the straight-leg cut of the Levi's 501s, while the chunky white sneakers and black crossbody bag lean into the jeans' streetwear aesthetic for an effortless, classic casual look.
+
+---
+
+**Outfit 2: Coozy Layered**
+* **New Item:** Levi's Vintage Levi's 501 Jeans — Medium Wash
+* **Owned Pieces:** Oversized grey crewneck sweatshirt, Black combat boots, Brown leather belt
+
+**Why it works:** Tucking the hem of the oversized grey crewneck into the Levi's 501s creates a balanced proportion. The brown leather belt adds a polished anchor, and the black combat boots give the vintage denim a subtle grunge edge.
 ```
 
-```
-$ python -c "from tools import create_fit_card; ..."
+### Fit-card tool
 
+```text
+$ python -c 'from tools import create_fit_card; from utils.data_loader import load_listings; print(create_fit_card("jeans and white sneakers", load_listings()[0]))'
+Scored these vintage Levi's 501s on Depop for just $38! They’ve got the best medium wash with natural knee fading that gives them that effortless streetwear vibe. Style them with white sneakers for an easy, everyday look.
 ```
+
+### Extra checks and repeated captions
+
+The empty wardrobe produced general styling advice in a live model call. A
+blank outfit returned the documented message without calling the model. All
+15 deterministic tool checks passed; their model doubles test control flow
+and prompt construction, not model quality.
+
+Three calls to `create_fit_card` on the same item and outfit returned identical
+text. The adapter reported three cache hits and zero new requests in that
+repeat command, with `CACHE_ENABLED=True` and `TEMPERATURE=0.9`. This is expected
+building-cache behavior. Genuine variation needs the existing cache override
+for evaluation; the cache and pacing implementation have not been changed.
+
+Complete commands and actual outputs, including all three repeated captions:
+[results/milestone4_tools.txt](results/milestone4_tools.txt).
 
 ---
 

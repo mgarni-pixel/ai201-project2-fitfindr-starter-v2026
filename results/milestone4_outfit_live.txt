@@ -1,0 +1,14 @@
+$ python -c 'from tools import suggest_outfit; from utils.data_loader import get_example_wardrobe, load_listings; print(suggest_outfit(load_listings()[0], get_example_wardrobe()))'
+**Outfit 1: Casual Streetwear**
+* **New Item:** Levi's Vintage Levi's 501 Jeans — Medium Wash
+* **Owned Pieces:** White ribbed tank top, Chunky white sneakers, Black crossbody bag
+
+**Why it works:** The fitted white ribbed tank balances the straight-leg cut of the Levi's 501s, while the chunky white sneakers and black crossbody bag lean into the jeans' streetwear aesthetic for an effortless, classic casual look.
+
+---
+
+**Outfit 2: Coozy Layered**
+* **New Item:** Levi's Vintage Levi's 501 Jeans — Medium Wash
+* **Owned Pieces:** Oversized grey crewneck sweatshirt, Black combat boots, Brown leather belt
+
+**Why it works:** Tucking the hem of the oversized grey crewneck into the Levi's 501s creates a balanced proportion. The brown leather belt adds a polished anchor, and the black combat boots give the vintage denim a subtle grunge edge.

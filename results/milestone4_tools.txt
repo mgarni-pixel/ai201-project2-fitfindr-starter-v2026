@@ -1,0 +1,93 @@
+Milestone 4: standalone tools before agent wiring
+Recorded UTC: 2026-10-05T02:36:23.091831+00:00
+Criteria commit: 73d22e2e521616fd5d3ed37285538ab7b6d7e70b
+An earlier live-test process ended without recorded output; its model-call outcome is unknown and is not counted as passed. A fresh bounded outfit call subsequently succeeded; its output is in milestone4_outfit_live.txt.
+Only unchanged public mock starter listing/wardrobe data were supplied to Gemini.
+
+Search tool
+$ python -c 'from tools import search_listings; print(search_listings("graphic tee", max_price=30))'
+[{'id': 'lst_002', 'title': 'Y2K Baby Tee — Butterfly Print', 'description': 'Super cute early 2000s baby tee with butterfly graphic. Fitted crop length. Tag says medium but fits like a small.', 'category': 'tops', 'style_tags': ['y2k', 'vintage', 'graphic tee', 'cottagecore'], 'size': 'S/M', 'condition': 'excellent', 'price': 18.0, 'colors': ['white', 'pink', 'purple'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_006', 'title': 'Graphic Tee — 2003 Tour Bootleg Style', 'description': 'Vintage-style bootleg tee with faded graphic. Slightly boxy fit. 100% cotton, soft and worn-in.', 'category': 'tops', 'style_tags': ['graphic tee', 'vintage', 'grunge', 'streetwear', 'band tee'], 'size': 'L', 'condition': 'good', 'price': 24.0, 'colors': ['black'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_017', 'title': 'Mesh Long-Sleeve Top — Black', 'description': 'Sheer black mesh long-sleeve. Great for layering under a graphic tee or over a bralette. Stretchy material, fits true to size.', 'category': 'tops', 'style_tags': ['y2k', 'grunge', 'goth', 'layering'], 'size': 'S/M', 'condition': 'excellent', 'price': 15.0, 'colors': ['black'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_033', 'title': 'Vintage Band Tee — Faded Grey', 'description': 'Faded grey band-style tee with distressed graphic. Crew neck. Fits boxy. Well-loved but no holes or major damage.', 'category': 'tops', 'style_tags': ['vintage', 'grunge', 'band tee', 'graphic tee', 'streetwear'], 'size': 'L', 'condition': 'fair', 'price': 19.0, 'colors': ['grey', 'charcoal'], 'brand': None, 'platform': 'depop'}, {'id': 'lst_011', 'title': 'Low-Rise Cargo Pants — Khaki', 'description': 'Y2K era low-rise cargo pants. Lots of pockets. Khaki color, slightly distressed at the hems. Great for layering with a long tee.', 'category': 'bottoms', 'style_tags': ['y2k', 'cargo', '2000s', 'streetwear'], 'size': 'W29', 'condition': 'fair', 'price': 27.0, 'colors': ['khaki', 'tan'], 'brand': None, 'platform': 'poshmark'}, {'id': 'lst_015', 'title': 'Vintage Graphic Hoodie — Faded Black', 'description': 'Faded black pullover hoodie with barely-visible vintage graphic on the chest. Cozy interior. Some pilling but adds to the worn-in look.', 'category': 'tops', 'style_tags': ['vintage', 'grunge', 'graphic', 'streetwear'], 'size': 'L', 'condition': 'fair', 'price': 26.0, 'colors': ['black', 'charcoal'], 'brand': None, 'platform': 'depop'}]
+
+Exit code: 0
+
+Outfit tool
+$ python -c 'from tools import suggest_outfit; from utils.data_loader import get_example_wardrobe, load_listings; print(suggest_outfit(load_listings()[0], get_example_wardrobe()))'
+**Outfit 1: Casual Streetwear**
+* **New Item:** Levi's Vintage Levi's 501 Jeans — Medium Wash
+* **Owned Pieces:** White ribbed tank top, Chunky white sneakers, Black crossbody bag
+
+**Why it works:** The fitted white ribbed tank balances the straight-leg cut of the Levi's 501s, while the chunky white sneakers and black crossbody bag lean into the jeans' streetwear aesthetic for an effortless, classic casual look.
+
+---
+
+**Outfit 2: Coozy Layered**
+* **New Item:** Levi's Vintage Levi's 501 Jeans — Medium Wash
+* **Owned Pieces:** Oversized grey crewneck sweatshirt, Black combat boots, Brown leather belt
+
+**Why it works:** Tucking the hem of the oversized grey crewneck into the Levi's 501s creates a balanced proportion. The brown leather belt adds a polished anchor, and the black combat boots give the vintage denim a subtle grunge edge.
+
+Exit code: 0
+
+Fit-card tool
+$ python -c 'from tools import create_fit_card; from utils.data_loader import load_listings; print(create_fit_card("jeans and white sneakers", load_listings()[0]))'
+Scored these vintage Levi's 501s on Depop for just $38! They’ve got the best medium wash with natural knee fading that gives them that effortless streetwear vibe. Style them with white sneakers for an easy, everyday look.
+
+Exit code: 0
+
+Empty wardrobe live check
+$ python -c 'from tools import suggest_outfit; from utils.data_loader import get_empty_wardrobe, load_listings; print(suggest_outfit(load_listings()[1], get_empty_wardrobe()))'
+**Outfit 1: Y2K Casual**
+*   **Bottoms:** Low-rise baggy cargo pants or a denim mini skirt.
+*   **Footwear:** Chunky platform sneakers.
+*   **Accessories:** A small shoulder bag and wire-rim sunglasses to lean into the 2000s aesthetic.
+
+**Outfit 2: Sweet & Casual**
+*   **Bottoms:** High-waisted straight-leg light wash jeans.
+*   **Footwear:** Retro canvas trainers or ballet flats.
+*   **Accessories:** A beaded necklace and a canvas tote bag.
+
+Exit code: 0
+
+Blank outfit guard
+$ python -c 'from tools import create_fit_card; from utils.data_loader import load_listings; import generate; print(create_fit_card("   ", load_listings()[0])); print(generate.usage())'
+No outfit suggestion was provided. Add an outfit before creating a fit card.
+0 model calls this session
+
+Exit code: 0
+
+Three same-item captions
+$ python -c 'from tools import create_fit_card; from utils.data_loader import load_listings; import config, generate; outputs=[create_fit_card("jeans and white sneakers", load_listings()[0]) for _ in range(3)]; [print(f"Caption {i+1}: {text}") for i,text in enumerate(outputs)]; print("All three identical:", len(set(outputs))==1); print("CACHE_ENABLED:",config.CACHE_ENABLED,"TEMPERATURE:",config.TEMPERATURE); print(generate.usage())'
+Caption 1: Scored these vintage Levi's 501s on Depop for just $38! They’ve got the best medium wash with natural knee fading that gives them that effortless streetwear vibe. Style them with white sneakers for an easy, everyday look.
+Caption 2: Scored these vintage Levi's 501s on Depop for just $38! They’ve got the best medium wash with natural knee fading that gives them that effortless streetwear vibe. Style them with white sneakers for an easy, everyday look.
+Caption 3: Scored these vintage Levi's 501s on Depop for just $38! They’ve got the best medium wash with natural knee fading that gives them that effortless streetwear vibe. Style them with white sneakers for an easy, everyday look.
+All three identical: True
+CACHE_ENABLED: True TEMPERATURE: 0.9
+0 model calls this session, 3 served from cache
+
+Exit code: 0
+
+$ python -m unittest discover -s tests -p 'test_tools.py' -v
+test_blank_outfit_skips_model (test_tools.ModelToolTests.test_blank_outfit_skips_model) ... ok
+test_caption_prompt_contains_source_outfit_and_item (test_tools.ModelToolTests.test_caption_prompt_contains_source_outfit_and_item) ... ok
+test_empty_model_text_is_not_fabricated (test_tools.ModelToolTests.test_empty_model_text_is_not_fabricated) ... ok
+test_empty_wardrobe_requests_general_advice (test_tools.ModelToolTests.test_empty_wardrobe_requests_general_advice) ... ok
+test_owned_items_are_in_prompt (test_tools.ModelToolTests.test_owned_items_are_in_prompt) ... ok
+test_empty_and_no_matches_are_lists (test_tools.SearchTests.test_empty_and_no_matches_are_lists) ... ok
+test_price_ceiling_nonempty_and_inclusive (test_tools.SearchTests.test_price_ceiling_nonempty_and_inclusive) ... ok
+test_price_size_and_description_together (test_tools.SearchTests.test_price_size_and_description_together) ... ok
+test_shape_limit_and_source_unchanged (test_tools.SearchTests.test_shape_limit_and_source_unchanged) ... ok
+test_ties_keep_source_order (test_tools.SearchTests.test_ties_keep_source_order) ... ok
+test_no_clothing_substrings_in_shoes_or_xl (test_tools.SizeTests.test_no_clothing_substrings_in_shoes_or_xl) ... ok
+test_one_size_and_aliases (test_tools.SizeTests.test_one_size_and_aliases) ... ok
+test_shoe_decimal_exactness (test_tools.SizeTests.test_shoe_decimal_exactness) ... ok
+test_split_clothing_tags (test_tools.SizeTests.test_split_clothing_tags) ... ok
+test_waist_and_optional_inseam (test_tools.SizeTests.test_waist_and_optional_inseam) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.005s
+
+OK
+Exit code: 0
+
+Diagnosis: three identical caption outputs were served from the building cache. CACHE_ENABLED remained True and TEMPERATURE remained 0.9. These are three function calls, not three independent model generations.
+Initial deterministic check: two assertions failed because default JSON encoding escaped item-title punctuation. Prompt JSON now uses ensure_ascii=False; all 15 checks then passed.
