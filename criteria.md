@@ -1,133 +1,69 @@
-# Acceptance criteria — FitFindr
+# Acceptance criteria: FitFindr
 
-Five criteria that say what "working" means for this agent, written in unit 3
-**before** any results existed.
-
-An acceptance criterion names a target: a number, a count, a rate, or something
-a person could plainly observe. *"The agent handles errors"* is an opinion.
-*"When search returns nothing, the agent stops before calling the second tool,
-in 5 of 5 tries"* is a criterion.
-
-Under each one, write a sentence or two on **why that target** and not a
-stricter one. A reason that says something about your tools, your loop, or the
-data earns credit; *"80% seemed reasonable"* does not.
-
-> Missing your own targets next unit costs you nothing. Setting a target so
-> easy you can't miss it does.
-
-**Two are written for you. You write three.**
-
----
+Criteria 1 and 2 are supplied by the course. Criteria 3 through 5 and the reasons
+below were drafted by AI at the student's request. They are not independently
+student-authored and are pending student review and rework. This record does
+not establish instructor approval or an extension. The criteria are committed
+before tool implementation, tool tests, and agent acceptance results.
 
 ## 1. A matching query completes all three tools
 
 Given a query that matches at least one listing, the agent completes all three
-tool calls and returns a fit card — in at least 4 of 5 tries.
+tool calls and returns a fit card in at least 4 of 5 tries.
 
-**Why this target:**
-<!-- Why 4 of 5 and not 5 of 5? Something about your search, probably —
-     "my search is a plain keyword match and some phrasings will miss" is a
-     real answer. -->
-
----
+**Why this target:** This checks that `search_listings`, `suggest_outfit`, and
+`create_fit_card` work together. A 4/5 target allows one failure from the
+model-backed steps while still requiring reliable completion; 5/5 would demand
+greater consistency from those steps.
 
 ## 2. An impossible query stops before the second tool
 
 Given a query that matches no listings, the agent stops before calling
-`suggest_outfit` and returns a message naming what to change — 5 of 5 tries.
+`suggest_outfit` and returns a message naming what to change in 5 of 5 tries.
 
-**Why this target:**
-<!-- Why is 5 of 5 reasonable here when criterion 1 isn't? What's different
-     about this path? -->
+**Why this target:** The empty-results branch in `run_agent` is deterministic.
+All five attempts must pass because calling the next tool without an item or
+leaving the user without a next step is avoidable; a lower rate would accept a
+branch bug, and a stricter test would need more varied no-match inputs.
 
----
+## 3. The selected listing reaches the next tool unchanged
 
-## 3. Something about state
+Given a query with matching listings, inspect `selected_item` in the returned
+session and the `new_item` argument passed to `suggest_outfit`. Both must contain
+the same listing dictionary, including the same `id`, without asking the user
+to enter the item again, in 5 of 5 tries.
 
-<!-- YOU WRITE THIS ONE.
+**Why this target:** This checks that `run_agent` carries the selected item
+through the session correctly. Passing data between steps is deterministic, so
+a lower target would accept an avoidable state-handling bug; broader input
+coverage would be a stricter test than these five attempts.
 
-     How would you know that the item your search found is the same item the
-     next tool received? Name something countable or observable.
+## 4. The caption is grounded in the item and outfit
 
-     This is the criterion people find hardest, because state failure doesn't
-     look like state failure — it looks like a tool problem. Something that
-     compares session["selected_item"] against what actually reached
-     suggest_outfit is the shape you're after. -->
+Given an item and a nonempty outfit suggestion, `create_fit_card` returns a
+caption that identifies the item by its type and at least one accurate
+distinguishing detail, and includes at least one specific styling suggestion
+from the supplied outfit, in at least 4 of 5 tries. The wording may vary.
 
+**Why this target:** This checks whether `create_fit_card` produces useful,
+item-specific text without requiring an exact sentence match. A 4/5 target
+allows one weak model response; requiring 5/5 would demand greater consistency.
 
+## 5. Search respects the inclusive price ceiling
 
-**Why this target:**
+Call `search_listings` with description `vintage`, no size filter, and
+`max_price` of 20. In 5 of 5 tries, it must return at least one listing and every
+returned listing's price must be 20 or less.
 
-
-
----
-
-## 4. Something about the fit card
-
-<!-- YOU WRITE THIS ONE.
-
-     The fit card calls a model, so the same input can produce different words
-     each time. That's not a bug — it's the nature of the tool. So what would
-     make it acceptable?
-
-     Think about what you'd actually be unhappy to see. A caption that never
-     mentions the price? Two different items producing the same opening
-     sentence? A card longer than a caption anyone would post? Any of those can
-     be turned into a number. -->
-
-
-
-**Why this target:**
-
-
+**Why this target:** The supplied data contains vintage items both below and
+above this limit, so this checks that `search_listings` enforces the budget and
+cannot pass by always returning `[]`. The filter is deterministic, so all five
+attempts should pass; allowing an over-budget result defeats the limit, while
+checking more price ceilings would make the test stricter.
 
 ---
 
-## 5. Your choice
-
-<!-- YOU WRITE THIS ONE TOO.
-
-     Pick something you actually care about getting right. Speed, the empty
-     wardrobe path, what happens when the model can't be reached, whether the
-     search respects a price ceiling — anything, as long as it names a number
-     or an observable outcome. -->
-
-
-
-**Why this target:**
-
-
-
----
-
-<!-- ─────────────────────────────────────────────────────────────────────────
-     UNIT 4 — read this before you change anything above.
-
-     If a criterion turns out to be BROKEN rather than merely unmet, you can
-     revise it, and that earns credit. But never delete or edit the original
-     line. Add the revision underneath it, like this:
-
-         ## 4. Something about the fit card
-
-         The fit card is different every time.
-
-         **Why this target:** ...
-
-         > **Revised in unit 4:** For 5 different items, the 5 fit cards share
-         > no opening sentence.
-         >
-         > **Why revised:** "different" wasn't checkable — two cards that
-         > differed by one word still counted. The new version is something I
-         > can actually score.
-
-     That's a revision because the criterion couldn't be MEASURED.
-
-     Lowering a target because you missed it is not a revision, and it costs
-     you the point:
-
-         ✗ "I said the empty search stops it 5 of 5 times, but I got 3 of 5,
-            so 3 of 5 is more realistic."
-
-     A number you missed stays where it is, gets diagnosed, and gets a fix
-     attempted. That's where the points are.
-     ───────────────────────────────────────────────────────────────────────── -->
+For Unit 4, retain these original targets. If a criterion cannot be measured,
+add a dated revision and its reason beneath the original instead of deleting
+it. Do not lower a target just because a run missed it. No Unit 4 results have
+been recorded here.
