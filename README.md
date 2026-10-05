@@ -146,7 +146,8 @@ outfit, create the fit card, and return the session.
 ceiling from `under`, `below`, `up to`, `max`, or `at most` followed by an optional
 `$` and a number, or from a standalone dollar amount. It will extract an explicit
 `size` clause (including clothing, shoe, waist/inseam, one-size, and unsupported
-sizes). The matched clauses and common request filler are removed from the
+sizes). Slash-separated numeric or waist/inseam constraints are preserved in full.
+The matched clauses and common request filler are removed from the
 remaining description. Missing filters become None. The parsed values go into
 `session["parsed"]`; parsing does not call the model.
 
@@ -157,8 +158,10 @@ from that session. The no-match path leaves the three later result fields None.
 A four-stage planning loop (`parse`, `search`, `suggest`, `card`) checks
 `trace.check_iterations()` on each iteration and retains `config.MAX_ITERATIONS`.
 
-These are planned contracts at Milestone 2. Implementation and real output are
-recorded in the following milestones. No stretch feature is being declared.
+The contracts were committed at Milestone 2 before implementation. The parser
+and four-stage loop are now implemented as described. No stretch feature has
+been declared. Final student review, What This Does, and How I Used AI remain
+for Milestone 6.
 
 ---
 
@@ -166,8 +169,50 @@ recorded in the following milestones. No stretch feature is being declared.
 
 **One full query**
 
-Pending Milestone 5 agent wiring. The Milestone 1 unbuilt-starter baseline is
-recorded separately and is not a working full-agent sample.
+Actual Milestone 5 happy-path output, using the supplied example wardrobe:
+
+```text
+$ python app.py ask 'vintage graphic tee under $30, size M'
+
+  Found:    Y2K Baby Tee — Butterfly Print — $18.0 on depop
+
+  Outfit:   **Outfit 1: Y2K Streetwear**
+*   **New Item:** Y2K Baby Tee — Butterfly Print
+*   **Owned Pieces:** Baggy straight-leg jeans, dark wash (w_001), Vintage black denim jacket (w_006), Chunky white sneakers (w_007), Black crossbody bag (w_010)
+*   **Why it works:** The fitted, cropped cut of the baby tee balances the voluminous silhouette of the high-waisted baggy jeans. Adding the slightly cropped black denim jacket and chunky white sneakers leans fully into the early 2000s streetwear aesthetic.
+
+**Outfit 2: Casual Contrast**
+*   **New Item:** Y2K Baby Tee — Butterfly Print
+*   **Owned Pieces:** Wide-leg khaki trousers (w_002), Brown leather belt (w_009), Black combat boots (w_008)
+*   **Why it works:** Pairing the feminine, pink-and-purple butterfly graphic tee with utility-inspired wide-leg khaki trousers creates a balanced high-low mix of Y2K and minimal earth tones. The brown belt and black combat boots ground the lighter colors of the top and bottoms.
+
+  Fit card: Scored this adorable Y2K baby tee featuring a colorful pink and purple butterfly graphic on Depop for just $18. It has that classic fitted crop length and an effortless early 2000s vibe. I love styling it with baggy straight-leg jeans and chunky white sneakers for a total streetwear look.
+
+2 model calls this session, 1304 prompt + 326 output tokens
+```
+
+The impossible-query branch also ran:
+
+```text
+$ python app.py ask 'designer ballgown size XXS under $5'
+
+  No matching listings. Try broader keywords, a different size, or a higher price ceiling.
+
+0 model calls this session
+```
+
+Five fresh matching runs with the existing `AI201_CACHE=0` override completed
+all three tools and preserved the selected dictionary in the real downstream
+arguments. Five no-match attempts made zero suggest/card calls, left the later
+fields None, and returned an actionable message. Five budget-filter attempts
+returned nonempty results, all at or below $20. AI-assisted inspection of the saved item/outfit/caption triples found all five
+captions met criterion 4, with 3, 4, 3, 3, and 3 sentences and correct price and
+platform once each. This coverage uses one item (`lst_002`) and one matching
+query; student review and broader testing remain pending.
+
+Full state/input evidence: [results/milestone5_trials.json](results/milestone5_trials.json).
+Commands/check output: [results/milestone5_agent.txt](results/milestone5_agent.txt).
+
 
 **The three tools, tested one at a time**
 

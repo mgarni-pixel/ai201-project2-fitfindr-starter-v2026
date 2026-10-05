@@ -1,0 +1,166 @@
+Milestone 5: agent wiring and session/branch checks
+Recorded UTC: 2026-10-05T02:42:35.220194+00:00
+Only public, unchanged starter mock data are used. Criteria were committed before these results.
+
+$ python app.py ask 'vintage graphic tee under $30, size M'
+
+  Found:    Y2K Baby Tee — Butterfly Print — $18.0 on depop
+
+  Outfit:   **Outfit 1: Y2K Streetwear**
+*   **New Item:** Y2K Baby Tee — Butterfly Print
+*   **Owned Pieces:** Baggy straight-leg jeans, dark wash (w_001), Vintage black denim jacket (w_006), Chunky white sneakers (w_007), Black crossbody bag (w_010)
+*   **Why it works:** The fitted, cropped cut of the baby tee balances the voluminous silhouette of the high-waisted baggy jeans. Adding the slightly cropped black denim jacket and chunky white sneakers leans fully into the early 2000s streetwear aesthetic.
+
+**Outfit 2: Casual Contrast**
+*   **New Item:** Y2K Baby Tee — Butterfly Print
+*   **Owned Pieces:** Wide-leg khaki trousers (w_002), Brown leather belt (w_009), Black combat boots (w_008)
+*   **Why it works:** Pairing the feminine, pink-and-purple butterfly graphic tee with utility-inspired wide-leg khaki trousers creates a balanced high-low mix of Y2K and minimal earth tones. The brown belt and black combat boots ground the lighter colors of the top and bottoms.
+
+  Fit card: Scored this adorable Y2K baby tee featuring a colorful pink and purple butterfly graphic on Depop for just $18. It has that classic fitted crop length and an effortless early 2000s vibe. I love styling it with baggy straight-leg jeans and chunky white sneakers for a total streetwear look.
+
+2 model calls this session, 1304 prompt + 326 output tokens
+
+Exit code: 0
+
+$ python app.py ask 'designer ballgown size XXS under $5'
+
+  No matching listings. Try broader keywords, a different size, or a higher price ceiling.
+
+0 model calls this session
+
+Exit code: 0
+
+Five matching runs with AI201_CACHE=0 using the unchanged supplied adapter.
+Runner source: tests/milestone5_live_checks.py (committed with the milestone).
+Outcomes out of five: {"criterion_1": 5, "criterion_2": 5, "criterion_3": 5, "criterion_5": 5}
+Model calls: 10
+Cache enabled: False
+10 model calls this session, 6306 prompt + 1407 output tokens
+Criterion 4 caption grounding awaits inspection of the five recorded item/outfit/caption triples.
+
+
+$ python -m unittest discover -s tests -v
+test_call_order_and_session_identity (test_agent.LoopTests.test_call_order_and_session_identity) ... ok
+test_fresh_state_after_success (test_agent.LoopTests.test_fresh_state_after_success) ... ok
+test_iteration_guard_runs_before_next_tool (test_agent.LoopTests.test_iteration_guard_runs_before_next_tool) ... ok
+test_real_empty_search_stops_and_preserves_none (test_agent.LoopTests.test_real_empty_search_stops_and_preserves_none) ... ok
+test_documented_query_shapes (test_agent.ParserTests.test_documented_query_shapes) ... ok
+test_blank_outfit_skips_model (test_tools.ModelToolTests.test_blank_outfit_skips_model) ... ok
+test_caption_prompt_contains_source_outfit_and_item (test_tools.ModelToolTests.test_caption_prompt_contains_source_outfit_and_item) ... ok
+test_empty_model_text_is_not_fabricated (test_tools.ModelToolTests.test_empty_model_text_is_not_fabricated) ... ok
+test_empty_wardrobe_requests_general_advice (test_tools.ModelToolTests.test_empty_wardrobe_requests_general_advice) ... ok
+test_owned_items_are_in_prompt (test_tools.ModelToolTests.test_owned_items_are_in_prompt) ... ok
+test_empty_and_no_matches_are_lists (test_tools.SearchTests.test_empty_and_no_matches_are_lists) ... ok
+test_price_ceiling_nonempty_and_inclusive (test_tools.SearchTests.test_price_ceiling_nonempty_and_inclusive) ... ok
+test_price_size_and_description_together (test_tools.SearchTests.test_price_size_and_description_together) ... ok
+test_shape_limit_and_source_unchanged (test_tools.SearchTests.test_shape_limit_and_source_unchanged) ... ok
+test_ties_keep_source_order (test_tools.SearchTests.test_ties_keep_source_order) ... ok
+test_no_clothing_substrings_in_shoes_or_xl (test_tools.SizeTests.test_no_clothing_substrings_in_shoes_or_xl) ... ok
+test_one_size_and_aliases (test_tools.SizeTests.test_one_size_and_aliases) ... ok
+test_shoe_decimal_exactness (test_tools.SizeTests.test_shoe_decimal_exactness) ... ok
+test_split_clothing_tags (test_tools.SizeTests.test_split_clothing_tags) ... ok
+test_waist_and_optional_inseam (test_tools.SizeTests.test_waist_and_optional_inseam) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.008s
+
+OK
+Exit code: 0
+
+Final parser correction: slash-separated numeric and waist/inseam sizes retain the complete constraint; they are not silently truncated.
+$ python -m unittest discover -s tests -v
+test_call_order_and_session_identity (test_agent.LoopTests.test_call_order_and_session_identity) ... ok
+test_composite_sizes_are_not_truncated (test_agent.LoopTests.test_composite_sizes_are_not_truncated) ... ok
+test_fresh_state_after_success (test_agent.LoopTests.test_fresh_state_after_success) ... ok
+test_iteration_guard_runs_before_next_tool (test_agent.LoopTests.test_iteration_guard_runs_before_next_tool) ... ok
+test_real_empty_search_stops_and_preserves_none (test_agent.LoopTests.test_real_empty_search_stops_and_preserves_none) ... ok
+test_documented_query_shapes (test_agent.ParserTests.test_documented_query_shapes) ... ok
+test_blank_outfit_skips_model (test_tools.ModelToolTests.test_blank_outfit_skips_model) ... ok
+test_caption_prompt_contains_source_outfit_and_item (test_tools.ModelToolTests.test_caption_prompt_contains_source_outfit_and_item) ... ok
+test_empty_model_text_is_not_fabricated (test_tools.ModelToolTests.test_empty_model_text_is_not_fabricated) ... ok
+test_empty_wardrobe_requests_general_advice (test_tools.ModelToolTests.test_empty_wardrobe_requests_general_advice) ... ok
+test_owned_items_are_in_prompt (test_tools.ModelToolTests.test_owned_items_are_in_prompt) ... ok
+test_empty_and_no_matches_are_lists (test_tools.SearchTests.test_empty_and_no_matches_are_lists) ... ok
+test_price_ceiling_nonempty_and_inclusive (test_tools.SearchTests.test_price_ceiling_nonempty_and_inclusive) ... ok
+test_price_size_and_description_together (test_tools.SearchTests.test_price_size_and_description_together) ... ok
+test_shape_limit_and_source_unchanged (test_tools.SearchTests.test_shape_limit_and_source_unchanged) ... ok
+test_ties_keep_source_order (test_tools.SearchTests.test_ties_keep_source_order) ... ok
+test_no_clothing_substrings_in_shoes_or_xl (test_tools.SizeTests.test_no_clothing_substrings_in_shoes_or_xl) ... ok
+test_one_size_and_aliases (test_tools.SizeTests.test_one_size_and_aliases) ... ok
+test_shoe_decimal_exactness (test_tools.SizeTests.test_shoe_decimal_exactness) ... ok
+test_split_clothing_tags (test_tools.SizeTests.test_split_clothing_tags) ... ok
+test_waist_and_optional_inseam (test_tools.SizeTests.test_waist_and_optional_inseam) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.009s
+
+OK
+Exit code: 0
+
+Post-correction CLI recheck:
+$ python app.py ask 'vintage graphic tee under $30, size M'
+
+  Found:    Y2K Baby Tee — Butterfly Print — $18.0 on depop
+
+  Outfit:   **Outfit 1: Y2K Streetwear**
+*   **New Item:** Y2K Baby Tee — Butterfly Print
+*   **Owned Pieces:** Baggy straight-leg jeans, dark wash (w_001), Vintage black denim jacket (w_006), Chunky white sneakers (w_007), Black crossbody bag (w_010)
+*   **Why it works:** The fitted, cropped cut of the baby tee balances the voluminous silhouette of the high-waisted baggy jeans. Adding the slightly cropped black denim jacket and chunky white sneakers leans fully into the early 2000s streetwear aesthetic.
+
+**Outfit 2: Casual Contrast**
+*   **New Item:** Y2K Baby Tee — Butterfly Print
+*   **Owned Pieces:** Wide-leg khaki trousers (w_002), Brown leather belt (w_009), Black combat boots (w_008)
+*   **Why it works:** Pairing the feminine, pink-and-purple butterfly graphic tee with utility-inspired wide-leg khaki trousers creates a balanced high-low mix of Y2K and minimal earth tones. The brown belt and black combat boots ground the lighter colors of the top and bottoms.
+
+  Fit card: Scored this adorable Y2K baby tee featuring a colorful pink and purple butterfly graphic on Depop for just $18. It has that classic fitted crop length and an effortless early 2000s vibe. I love styling it with baggy straight-leg jeans and chunky white sneakers for a total streetwear look.
+
+0 model calls this session, 2 served from cache
+Exit code: 0
+
+Post-correction CLI recheck:
+$ python app.py ask 'designer ballgown size XXS under $5'
+
+  No matching listings. Try broader keywords, a different size, or a higher price ceiling.
+
+0 model calls this session
+Exit code: 0
+
+Caption inspection (AI-assisted, using saved outputs; no new adapter requests): criterion 4 passed 5/5. All five trials use lst_002.
+Attempt 1: PASS. Butterfly baby tee and fitted crop; includes the supplied baggy dark-wash jeans pairing. 3 sentences; correct $18 and Depop once each.
+Attempt 2: PASS. Baby tee, butterfly print/colors, and fitted crop; includes the supplied jeans pairing. 4 sentences; correct $18 and Depop once each.
+Attempt 3: PASS. Butterfly baby tee and fitted crop; includes the supplied khaki trousers and brown leather belt pairing. 3 sentences; correct $18 and Depop once each.
+Attempt 4: PASS. Butterfly baby tee and fitted crop; includes the supplied baggy dark-wash jeans pairing. 3 sentences; correct $18 and Depop once each.
+Attempt 5: PASS. Butterfly baby tee and fitted crop; includes the supplied baggy straight-leg jeans pairing. 3 sentences; correct $18 and Depop once each.
+
+Final punctuation regression fixed: a trailing sentence period no longer drops an explicit size; decimal/slash continuations remain whole.
+$ python -m unittest discover -s tests -v
+test_call_order_and_session_identity (test_agent.LoopTests.test_call_order_and_session_identity) ... ok
+test_composite_sizes_are_not_truncated (test_agent.LoopTests.test_composite_sizes_are_not_truncated) ... ok
+test_fresh_state_after_success (test_agent.LoopTests.test_fresh_state_after_success) ... ok
+test_iteration_guard_runs_before_next_tool (test_agent.LoopTests.test_iteration_guard_runs_before_next_tool) ... ok
+test_real_empty_search_stops_and_preserves_none (test_agent.LoopTests.test_real_empty_search_stops_and_preserves_none) ... ok
+test_documented_query_shapes (test_agent.ParserTests.test_documented_query_shapes) ... ok
+test_trailing_period_does_not_drop_size (test_agent.ParserTests.test_trailing_period_does_not_drop_size) ... ok
+test_blank_outfit_skips_model (test_tools.ModelToolTests.test_blank_outfit_skips_model) ... ok
+test_caption_prompt_contains_source_outfit_and_item (test_tools.ModelToolTests.test_caption_prompt_contains_source_outfit_and_item) ... ok
+test_empty_model_text_is_not_fabricated (test_tools.ModelToolTests.test_empty_model_text_is_not_fabricated) ... ok
+test_empty_wardrobe_requests_general_advice (test_tools.ModelToolTests.test_empty_wardrobe_requests_general_advice) ... ok
+test_owned_items_are_in_prompt (test_tools.ModelToolTests.test_owned_items_are_in_prompt) ... ok
+test_empty_and_no_matches_are_lists (test_tools.SearchTests.test_empty_and_no_matches_are_lists) ... ok
+test_price_ceiling_nonempty_and_inclusive (test_tools.SearchTests.test_price_ceiling_nonempty_and_inclusive) ... ok
+test_price_size_and_description_together (test_tools.SearchTests.test_price_size_and_description_together) ... ok
+test_shape_limit_and_source_unchanged (test_tools.SearchTests.test_shape_limit_and_source_unchanged) ... ok
+test_ties_keep_source_order (test_tools.SearchTests.test_ties_keep_source_order) ... ok
+test_no_clothing_substrings_in_shoes_or_xl (test_tools.SizeTests.test_no_clothing_substrings_in_shoes_or_xl) ... ok
+test_one_size_and_aliases (test_tools.SizeTests.test_one_size_and_aliases) ... ok
+test_shoe_decimal_exactness (test_tools.SizeTests.test_shoe_decimal_exactness) ... ok
+test_split_clothing_tags (test_tools.SizeTests.test_split_clothing_tags) ... ok
+test_waist_and_optional_inseam (test_tools.SizeTests.test_waist_and_optional_inseam) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.010s
+
+OK
+Exit code: 0
+$ python -m compileall -q agent.py tools.py tests
+Exit code: 0 (no output)
