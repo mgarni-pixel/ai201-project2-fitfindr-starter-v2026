@@ -76,59 +76,89 @@ results or independent student-authorship claims are recorded here.
 
 ## Tool Inventory
 
-<!-- Four lines per tool. This is worth 2 points and it's the single most
-     common place students lose them.
-
-     "Returns a list" earns NOTHING. The description has to say what is IN
-     the list.
-
-     The empty case isn't optional either — it's the thing your loop branches
-     on, and if you don't decide it here you'll discover it as a crash in
-     Milestone 5. -->
+These contracts were drafted with AI assistance before implementation. They
+remain subject to student review and revision.
 
 ### `search_listings`
 
-- **What it does:**
-- **Inputs:** <!-- name and type each: `max_price` (float), not "a price" -->
-- **Returns:**
-- **When it has nothing:**
+- **What it does:** Load the supplied listings through `load_listings()`, apply
+  optional size and inclusive price filters, and rank positive keyword matches.
+- **Inputs:** `description` (str), `size` (str or None, default None), and
+  `max_price` (float or None, default None).
+- **Returns:** `list[dict]`, at most `config.SEARCH_RESULT_LIMIT` listing dictionaries.
+  Every dictionary keeps the source fields `id`, `title`, `description`,
+  `category`, `style_tags`, `size`, `condition`, `price`, `colors`, `brand`, and
+  `platform`. Rank by count of distinct shared, case-insensitive word tokens
+  across title, description, category, style tags, colors, and optional brand;
+  ties keep source order. Apply size/price filters before ranking and limiting.
+- **When it has nothing:** Return exactly `[]` for no positive matches, all
+  candidates filtered out, or a description with no meaningful keywords.
+
+**Size policy:** Match complete normalized size tokens, never substrings.
+`S/M`, `M/L`, and `L/XL` accept either listed clothing size; parenthesized fit
+notes do not change a tagged size. `small`, `medium`, `large`, `extra small`,
+and `extra large` map to `S`, `M`, `L`, `XS`, and `XL`. A numeric request such
+as `8` means `US 8`, and `8.5` never matches `8`. Waist/inseam tokens are
+separate: `W30` accepts `W30 L30`, but requesting both requires both.
+`One Size` listings match only an explicit one-size request, not every clothing
+size. An unsupported explicit size remains a filter and can produce `[]`.
 
 ### `suggest_outfit`
 
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
+- **What it does:** Ask the supplied `generate()` adapter for one or two outfit
+  ideas using the selected listing and, when present, actual owned pieces.
+- **Inputs:** `new_item` (dict, a listing with the fields above) and `wardrobe`
+  (dict with `items: list[dict]`; each owned item uses `id`, `name`, `category`,
+  `colors`, `style_tags`, and optional `notes`).
+- **Returns:** A nonempty `str` of outfit suggestions. Listing and wardrobe JSON
+  are treated as data; nullable brands are not assumed to exist.
+- **When it has nothing:** An empty or missing wardrobe `items` list requests
+  general styling advice for the new item and does not invent owned pieces.
+  A blank model response raises `ModelUnavailable` instead of pretending that
+  an outfit was generated; service failures remain distinct from an empty wardrobe.
 
 ### `create_fit_card`
 
-- **What it does:**
-- **Inputs:**
-- **Returns:**
-- **When it has nothing:**
+- **What it does:** Ask the same adapter for a short postable caption grounded
+  in the supplied outfit and listing.
+- **Inputs:** `outfit` (str, the outfit suggestion) and `new_item` (dict, the
+  selected listing with the source fields above).
+- **Returns:** A nonempty `str`. The prompt asks for two to four sentences,
+  the item type and an accurate detail, a specific styling detail from the
+  outfit, and the item's price and platform once each. Model wording can vary.
+- **When it has nothing:** An empty/whitespace-only outfit returns
+  `No outfit suggestion was provided. Add an outfit before creating a fit card.`
+  without a model call. A blank model response raises `ModelUnavailable`.
 
 ---
 
 ## Planning Loop
 
-<!-- Your branch rule, stated as a rule — the condition AND both paths — plus
-     the file and function that holds it.
-
-     Like this:
-       "If search_listings returns an empty list, put a message in the session
-        and stop. Otherwise take the first result and go to suggest_outfit."
-        — agent.py::run_agent
-
-     The grader checks your code against what you claim here, so the file and
-     function have to be real. -->
-
-**Branch rule:**
+**Branch rule:** If `session["search_results"]` is empty after `search_listings`,
+put an error in the session that suggests broader keywords, another size, or a
+higher budget, then return without calling `suggest_outfit` or `create_fit_card`.
+Otherwise, store the first result in `session["selected_item"]`, suggest an
+outfit, create the fit card, and return the session.
 
 **Where it lives:** `agent.py::run_agent`
 
-**How the query is parsed:** <!-- regex, string splitting, or asking the model — say which -->
+**How the query is parsed:** A deterministic regex parser will extract a price
+ceiling from `under`, `below`, `up to`, `max`, or `at most` followed by an optional
+`$` and a number, or from a standalone dollar amount. It will extract an explicit
+`size` clause (including clothing, shoe, waist/inseam, one-size, and unsupported
+sizes). The matched clauses and common request filler are removed from the
+remaining description. Missing filters become None. The parsed values go into
+`session["parsed"]`; parsing does not call the model.
 
-**What moves through the session:** <!-- which fields, in what order -->
+**What moves through the session:** Start a fresh session for every query;
+store `query` and `wardrobe`, then `parsed`, `search_results`, `selected_item`,
+`outfit_suggestion`, and `fit_card`. Each next tool reads its actual inputs back
+from that session. The no-match path leaves the three later result fields None.
+A four-stage planning loop (`parse`, `search`, `suggest`, `card`) checks
+`trace.check_iterations()` on each iteration and retains `config.MAX_ITERATIONS`.
+
+These are planned contracts at Milestone 2. Implementation and real output are
+recorded in the following milestones. No stretch feature is being declared.
 
 ---
 
