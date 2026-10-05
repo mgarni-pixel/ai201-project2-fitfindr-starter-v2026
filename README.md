@@ -20,6 +20,35 @@
 
 ---
 
+## Milestone 1: Starter inspection
+
+This is an AI-assisted setup and data record. Student review and the final
+AI-use disclosure are still pending. The tools and planning loop are the
+unchanged starter at this milestone.
+
+- Read all six records `lst_001` through `lst_006` using `app.py listings --full -n 6`.
+- Listing fields: `id` (str), `title` (str), `description` (str), `category` (str),
+  `style_tags` (list[str]), `size` (str), `condition` (str), `price` (float),
+  `colors` (list[str]), `brand` (str or None), and `platform` (str).
+- Wardrobe items use `id`, `name`, `category`, `colors`, `style_tags`, and optional
+  `notes`. The supplied wardrobe has 10 items. The loader's empty wardrobe is
+  `{"items": []}`; it removes the source JSON's documentation-only `_note`.
+- Sizes include `S/M`, `M/L`, `L/XL`, `US 8.5`, and `W30 L30`. A substring check
+  would incorrectly match `S` to `US 9` or `L` to `XL`; the next milestone needs
+  an explicit size-matching contract. `brand` is null for some listings.
+- Python 3.12.14 and a project `.venv` are in use. The original dependency bounds
+  are unchanged. This cloud VM also needs `socksio` 1.0.0 for its existing proxy;
+  it was installed locally without changing the project requirements.
+- The official `python test.py` check passed all 10 checks, including a real
+  model call. The starter query prints its expected unbuilt-loop message and
+  reports zero model calls; this baseline is not a completed agent.
+
+Actual command output, the six full listings, and the wardrobe schema are in
+[results/milestone1_starter.txt](results/milestone1_starter.txt). No acceptance
+results or independent student-authorship claims are recorded here.
+
+---
+
 <!-- ─────────────────────────────────────────────────────────────────────────
      HOW TO USE THIS FILE
 
