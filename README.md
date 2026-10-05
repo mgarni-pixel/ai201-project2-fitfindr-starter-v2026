@@ -272,24 +272,7 @@ Complete commands and actual outputs, including all three repeated captions:
 
 ## How I Used AI
 
-<!-- Two specific moments. What you asked, what came back, what you changed.
-
-     "I used Claude to help me code" is not enough.
-
-     "I gave Claude my search_listings spec. It returned None on no match
-     instead of an empty list, so I changed it" is the level we want. -->
-
-**Moment 1**
-
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
-
-**Moment 2**
-
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+I had Codex utilize review and auditing alongside tracing the outputs and aligning files to be as efficient for instructions as possible. I made sure to abide by the instructions fully and be able to complete every milestone with the review of AI. I also made sure to fully accomplish all goals and fully audit the code with AI to ensure there aren’t errors.
 
 <!-- ═══════════════════════ UNIT 4 — THE TEST ═══════════════════════
 
