@@ -25,17 +25,24 @@ MCP call visible among them. If you moved `search_listings` onto MCP, say so
 in the step name — `search_listings (via MCP)` is enough.
 """
 
+import copy
+import json
+
 import config
 
 _lines: list[str] = []
 _step_number = 0
+_steps: list[dict] = []
+_echo = True
 
 
-def start_trace() -> None:
+def start_trace(echo: bool = True) -> None:
     """Clear the trace. Call this at the start of each run."""
-    global _step_number
+    global _step_number, _echo
     _lines.clear()
     _step_number = 0
+    _steps.clear()
+    _echo = echo
 
 
 def step(name: str, inputs=None, returned=None, note: str = "") -> None:
@@ -45,12 +52,13 @@ def step(name: str, inputs=None, returned=None, note: str = "") -> None:
     Args:
         name:     what happened — usually a tool name.
         inputs:   what went in. Anything printable.
-        returned: what came back. Shortened automatically, so passing a long
-                  list of listings is fine.
+        returned: what came back, preserved in full for evidence.
         note:     an optional word on why, e.g. "branch: empty, stopping".
     """
     global _step_number
     _step_number += 1
+    _steps.append(copy.deepcopy({"step": _step_number, "name": name,
+                                "inputs": inputs, "returned": returned, "note": note}))
 
     line = f"[{_step_number}] {name}"
     if inputs is not None:
@@ -61,7 +69,8 @@ def step(name: str, inputs=None, returned=None, note: str = "") -> None:
         line += f"\n      →    {note}"
 
     _lines.append(line)
-    print(line, flush=True)
+    if _echo:
+        print(line, flush=True)
 
 
 def get_trace() -> str:
@@ -69,26 +78,14 @@ def get_trace() -> str:
     return "\n".join(_lines)
 
 
-def _short(value, limit: int = 110) -> str:
-    """Keep the trace readable. A 40-item list of dicts is not readable."""
-    if isinstance(value, list):
-        if not value:
-            return "[] (empty)"
-        head = value[0]
-        if isinstance(head, dict) and "title" in head:
-            titles = ", ".join(str(v.get("title", "?")) for v in value[:3])
-            more = f" … +{len(value) - 3} more" if len(value) > 3 else ""
-            return f"{len(value)} items: {titles}{more}"
-        return f"{len(value)} items: {str(head)[:60]}…"
+def get_steps() -> list[dict]:
+    """Snapshot actual call arguments/results for criterion inspection."""
+    return copy.deepcopy(_steps)
 
-    if isinstance(value, dict):
-        if "title" in value:
-            return f"{value.get('title')} (${value.get('price')}, {value.get('platform')})"
-        keys = ", ".join(list(value)[:6])
-        return f"dict with keys: {keys}"
 
-    text = str(value).replace("\n", " ")
-    return text if len(text) <= limit else text[:limit] + "…"
+def _short(value) -> str:
+    """Keep the starter formatting hook, but do not truncate test evidence."""
+    return json.dumps(value, ensure_ascii=False, sort_keys=True)
 
 
 def check_iterations(count: int) -> None:

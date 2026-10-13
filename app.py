@@ -111,7 +111,7 @@ def _ask_one(query, wardrobe, use_trace):
     if use_trace:
         trace_module.start_trace()
 
-    session = run_agent(query, wardrobe)
+    session = run_agent(query, wardrobe, traced=use_trace)
 
     print()
     if session["error"]:
@@ -141,7 +141,8 @@ def cmd_ask(args):
 
     wardrobe = get_empty_wardrobe() if args.empty_wardrobe else get_example_wardrobe()
     if args.empty_wardrobe:
-        print("(running with an empty wardrobe)")
+        print("Your wardrobe is empty. Showing general styling ideas; retry without "
+              "--empty-wardrobe to use the example wardrobe.")
 
     try:
         if args.query:

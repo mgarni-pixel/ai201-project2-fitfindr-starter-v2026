@@ -56,11 +56,11 @@ class LoopTests(unittest.TestCase):
             self.assertEqual(name, "search_listings")
             calls.append(("search", kwargs))
             return [self.item]
-        def suggest(item, wardrobe):
-            calls.append(("suggest", item, wardrobe))
+        def suggest(new_item, wardrobe):
+            calls.append(("suggest", new_item, wardrobe))
             return "Specific outfit"
-        def card(outfit, item):
-            calls.append(("card", outfit, item))
+        def card(outfit, new_item):
+            calls.append(("card", outfit, new_item))
             return "Grounded caption"
         with patch("agent.call_tool", side_effect=search), \
              patch("agent.suggest_outfit", side_effect=suggest), \

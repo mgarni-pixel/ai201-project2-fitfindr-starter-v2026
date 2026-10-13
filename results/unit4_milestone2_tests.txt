@@ -1,0 +1,33 @@
+test_call_order_and_session_identity (tests.test_agent.LoopTests.test_call_order_and_session_identity) ... ok
+test_composite_sizes_are_not_truncated (tests.test_agent.LoopTests.test_composite_sizes_are_not_truncated) ... ok
+test_fresh_state_after_success (tests.test_agent.LoopTests.test_fresh_state_after_success) ... ok
+test_iteration_guard_runs_before_next_tool (tests.test_agent.LoopTests.test_iteration_guard_runs_before_next_tool) ... ok
+test_real_empty_search_stops_and_preserves_none (tests.test_agent.LoopTests.test_real_empty_search_stops_and_preserves_none) ... ok
+test_documented_query_shapes (tests.test_agent.ParserTests.test_documented_query_shapes) ... ok
+test_trailing_period_does_not_drop_size (tests.test_agent.ParserTests.test_trailing_period_does_not_drop_size) ... ok
+test_failure_at_either_model_tool_is_actionable_and_traced (tests.test_failures.FailureTests.test_failure_at_either_model_tool_is_actionable_and_traced) ... ok
+test_mcp_failure_stops_before_model (tests.test_failures.FailureTests.test_mcp_failure_stops_before_model) ... ok
+test_trace_preserves_values_and_resets_between_runs (tests.test_failures.FailureTests.test_trace_preserves_values_and_resets_between_runs) ... ok
+test_only_search_is_registered_with_inventory_schema (tests.test_mcp.MCPTests.test_only_search_is_registered_with_inventory_schema) ... ok
+test_round_trip_preserves_positive_empty_and_filtered_results (tests.test_mcp.MCPTests.test_round_trip_preserves_positive_empty_and_filtered_results) ... ok
+test_unknown_tool_is_an_explicit_error (tests.test_mcp.MCPTests.test_unknown_tool_is_an_explicit_error) ... ok
+test_blank_outfit_skips_model (tests.test_tools.ModelToolTests.test_blank_outfit_skips_model) ... ok
+test_caption_prompt_contains_source_outfit_and_item (tests.test_tools.ModelToolTests.test_caption_prompt_contains_source_outfit_and_item) ... ok
+test_empty_model_text_is_not_fabricated (tests.test_tools.ModelToolTests.test_empty_model_text_is_not_fabricated) ... ok
+test_empty_wardrobe_requests_general_advice (tests.test_tools.ModelToolTests.test_empty_wardrobe_requests_general_advice) ... ok
+test_owned_items_are_in_prompt (tests.test_tools.ModelToolTests.test_owned_items_are_in_prompt) ... ok
+test_empty_and_no_matches_are_lists (tests.test_tools.SearchTests.test_empty_and_no_matches_are_lists) ... ok
+test_price_ceiling_nonempty_and_inclusive (tests.test_tools.SearchTests.test_price_ceiling_nonempty_and_inclusive) ... ok
+test_price_size_and_description_together (tests.test_tools.SearchTests.test_price_size_and_description_together) ... ok
+test_shape_limit_and_source_unchanged (tests.test_tools.SearchTests.test_shape_limit_and_source_unchanged) ... ok
+test_ties_keep_source_order (tests.test_tools.SearchTests.test_ties_keep_source_order) ... ok
+test_no_clothing_substrings_in_shoes_or_xl (tests.test_tools.SizeTests.test_no_clothing_substrings_in_shoes_or_xl) ... ok
+test_one_size_and_aliases (tests.test_tools.SizeTests.test_one_size_and_aliases) ... ok
+test_shoe_decimal_exactness (tests.test_tools.SizeTests.test_shoe_decimal_exactness) ... ok
+test_split_clothing_tags (tests.test_tools.SizeTests.test_split_clothing_tags) ... ok
+test_waist_and_optional_inseam (tests.test_tools.SizeTests.test_waist_and_optional_inseam) ... ok
+
+----------------------------------------------------------------------
+Ran 28 tests in 5.632s
+
+OK

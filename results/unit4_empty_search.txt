@@ -1,0 +1,15 @@
+Command: python app.py ask 'designer ballgown size XXS under $5' '--trace'
+AI201_CACHE=0; real CLI, no tool doubles.
+[1] parse_query
+      in:  "designer ballgown size XXS under $5"
+      out: {"description": "designer ballgown", "max_price": 5.0, "size": "XXS"}
+[2] search_listings (via MCP)
+      in:  {"description": "designer ballgown", "max_price": 5.0, "size": "XXS"}
+      out: []
+[3] branch
+      out: "No matching listings. Try broader keywords, a different size, or a higher price ceiling."
+      →    empty search; stop before tool 2
+
+  No matching listings. Try broader keywords, a different size, or a higher price ceiling.
+
+0 model calls this session
