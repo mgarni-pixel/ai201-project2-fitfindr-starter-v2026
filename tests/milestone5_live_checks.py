@@ -20,7 +20,7 @@ query = 'vintage graphic tee under $30, size M'
 records = []
 for attempt in range(1, 6):
     order = []
-    original_search = agent.search_listings
+    original_search = agent.call_tool
     original_suggest = agent.suggest_outfit
     original_card = agent.create_fit_card
     def search(*args, **kwargs):
@@ -33,7 +33,7 @@ for attempt in range(1, 6):
         order.append('create_fit_card')
         return original_card(*args, **kwargs)
     try:
-        with patch('agent.search_listings', side_effect=search), \
+        with patch('agent.call_tool', side_effect=search), \
              patch('agent.suggest_outfit', side_effect=suggest) as suggest_spy, \
              patch('agent.create_fit_card', side_effect=card) as card_spy:
             session = agent.run_agent(query, get_example_wardrobe())
@@ -66,7 +66,7 @@ for attempt in range(1, 6):
 
 budget_records = []
 for attempt in range(1, 6):
-    matches = agent.search_listings('vintage', size=None, max_price=20)
+    matches = agent.call_tool('search_listings', {'description': 'vintage', 'size': None, 'max_price': 20})
     budget_records.append({'attempt': attempt,
                            'criterion_5_pass': bool(matches) and all(x['price'] <= 20 for x in matches),
                            'matches': matches})

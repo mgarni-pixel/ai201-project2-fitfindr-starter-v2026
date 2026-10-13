@@ -1,0 +1,27 @@
+
+AI201 environment check
+------------------------------------------------------------
+[PASS] Python version
+         3.13.14 on Windows
+[PASS] Virtual environment
+         .venv [local path redacted]
+[PASS] Pinned packages
+         all 5 import cleanly
+[PASS] Free disk space
+         58.5 GB
+[PASS] Memory
+         15.6 GB
+[PASS] Key hygiene
+         .env is ignored by git
+[PASS] API key
+         loaded, 39 characters
+[PASS] MCP
+         server and client both import
+[PASS] Project data
+         40 listings, 10 wardrobe items
+[PASS] Model call
+         gemini-3.5-flash-lite replied "Ready."
+------------------------------------------------------------
+10 passed, 0 failed, 0 to look at, 0 skipped
+
+You're set. See you in class.

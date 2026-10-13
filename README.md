@@ -13,10 +13,35 @@
 > python app.py ask 'vintage graphic tee under $30'
 > ```
 >
-> All three tools are stubs, so that last command will do nothing useful yet.
-> That's the starting position.
+> All three tools are implemented. Search now runs through the local MCP server.
 >
 > **The rest of this file is your submission.** Fill it in as you go.
+
+---
+
+## Unit 4: Testing continuation
+
+This new repository preserves the complete Part 1 history from
+[mgarni-pixel/ai201-project2-fitfindr-starter-v2026](https://github.com/mgarni-pixel/ai201-project2-fitfindr-starter-v2026),
+through `71e616a2122be08e3e291dcf2c7abb7507ba9e11`. The original criteria were
+committed at `73d22e2e521616fd5d3ed37285538ab7b6d7e70b` and remain unchanged.
+A new repository was explicitly requested; the course asks for the original
+URL, so this new destination is a submission deviation. The original repository
+has not been changed. The **How I Used AI** section is reserved for the user's
+Unit 4 update and retains its previous text.
+
+**Milestone 1:** `search_listings` is the only MCP tool. `agent.py::run_agent`
+uses `mcp_client.call_tool`; the two Gemini tools remain direct calls.
+The real stdio tests compare entire returned dictionaries with the original
+function for normal, empty, price-filtered and size-filtered searches.
+No search results or ranking changed across the boundary.
+
+Evidence: [registered schema](results/unit4_mcp_schema.txt),
+[setup check](results/unit4_setup.txt),
+[25 passing tests](results/unit4_milestone1_tests.txt), and
+[real end-to-end query](results/unit4_milestone1_query.txt).
+Environment: Python 3.13.14, google-genai 1.75.0, mcp 1.30.0; unchanged
+requirements bounds, `gemini-3.5-flash-lite`, temperature 0.9.
 
 ---
 

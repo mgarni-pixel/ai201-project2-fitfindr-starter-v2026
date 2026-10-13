@@ -52,7 +52,8 @@ class LoopTests(unittest.TestCase):
 
     def test_call_order_and_session_identity(self):
         calls = []
-        def search(**kwargs):
+        def search(name, kwargs):
+            self.assertEqual(name, "search_listings")
             calls.append(("search", kwargs))
             return [self.item]
         def suggest(item, wardrobe):
@@ -61,7 +62,7 @@ class LoopTests(unittest.TestCase):
         def card(outfit, item):
             calls.append(("card", outfit, item))
             return "Grounded caption"
-        with patch("agent.search_listings", side_effect=search), \
+        with patch("agent.call_tool", side_effect=search), \
              patch("agent.suggest_outfit", side_effect=suggest), \
              patch("agent.create_fit_card", side_effect=card):
             session = agent.run_agent("vintage tee under $30, size M", self.wardrobe)
@@ -101,7 +102,7 @@ class LoopTests(unittest.TestCase):
         card.assert_not_called()
 
     def test_fresh_state_after_success(self):
-        with patch("agent.search_listings", side_effect=[[self.item], []]), \
+        with patch("agent.call_tool", side_effect=[[self.item], []]), \
              patch("agent.suggest_outfit", return_value="outfit"), \
              patch("agent.create_fit_card", return_value="caption"):
             success = agent.run_agent("tee", self.wardrobe)
@@ -113,7 +114,7 @@ class LoopTests(unittest.TestCase):
 
     def test_iteration_guard_runs_before_next_tool(self):
         with patch("config.MAX_ITERATIONS", 2), \
-             patch("agent.search_listings", return_value=[self.item]), \
+             patch("agent.call_tool", return_value=[self.item]), \
              patch("agent.suggest_outfit") as suggest, \
              patch("agent.create_fit_card") as card:
             with self.assertRaisesRegex(RuntimeError, "MAX_ITERATIONS"):

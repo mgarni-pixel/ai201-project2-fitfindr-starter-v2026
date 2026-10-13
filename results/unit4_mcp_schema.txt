@@ -1,0 +1,7 @@
+Asking mcp_server.py what it offers�
+
+  search_listings
+    Find thrift listings by keywords, optional size and inclusive USD price ceiling; return listing dictionaries or [] when none match.
+    - description: string
+    - size: string  (optional)
+    - max_price: number  (optional)
