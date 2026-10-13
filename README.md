@@ -523,33 +523,55 @@ Caption: Scored this early 2000s white, pink, and purple baby tee on Depop for $
 
 ## Verdicts and Diagnoses
 
-<!-- MET or MISSED per criterion against LAST UNIT's target, plus a sentence on
-     how you decided.
+**Milestone 4.** The original criteria all met their targets. Nothing was
+redefined or lowered after seeing the results.
 
-     Then, for every miss: which of the four places it happened — a tool, the
-     loop's branch, the session, or the model's output — AND the mechanism.
+| # | Original target | Before verdict | How the decision was made |
+|---|---|---|---|
+| 1 | 4 of 5 | MET (5/5) | Every actual trace calls MCP search, outfit, then card; each session returns a nonempty card without an error. |
+| 2 | 5 of 5 | MET (5/5) | Every impossible search returns no listings and the actionable message; none invokes either model tool. |
+| 3 | 5 of 5 | MET (5/5) | All five complete selected-item dictionaries equal the actual `new_item` input at `suggest_outfit`, including the ID. |
+| 4 | 4 of 5 | MET (5/5) | Each caption identifies the baby tee, describes an accurate butterfly/crop/color detail, and recommends jeans or sneakers from the fixed outfit. Supporting phrases are in the grounding review. |
+| 5 | 5 of 5 | MET (5/5) | All five MCP calls use `vintage`, no size filter and max_price 20; each returns a nonempty list with no price above 20. |
 
-     Not a diagnosis:  "The fit card was bad."
-     A diagnosis:      "The fit card criterion missed on 2 of 5 items. Both had
-                        an empty brand field. My prompt puts the brand in the
-                        first sentence, so the card opened with a blank and read
-                        like a fragment. The tool worked; the prompt assumed a
-                        field that isn't always there."
+**Diagnosis of the observed defect.** No original criterion missed, but criterion
+1, try 3 returned this caption from `tools.py::create_fit_card`:
 
-     Look for a pattern. Three misses on the same tool is one problem, not
-     three. -->
+```text
+Scored this early 2000s baby tee featuring a sweet pink-and-purple butterfly graphic for just $18 on Depop! It has a fitted, cropped length that looks so good balanced with baggy dark-wash jeans. Such an easy y2k find for $18 on Depop.
+```
 
-| # | Criterion | Target | Verdict | How I decided |
-|---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
+The error occurs in the **model output at the final card step**. Search selected
+the correct $18 Depop item and the session passed that item through unchanged.
+The model repeats both facts in its last sentence even though the prompt says
+"once each." The tool accepts any nonempty response; its prompt has no explicit
+final check for this repetition. That is a prompt-adherence defect in an existing
+Tool Inventory promise, not a failure of criterion 1's completion condition.
 
-**Diagnoses**
+**Why all passes are limited.** Criteria 1 and 3 each use one matching query;
+criterion 4 uses one tee and one fixed outfit. These targets check basic plumbing
+and grounding, but miss repeated commercial details. A future stricter criterion
+4 would also require the correct price and platform exactly once and test several
+items. That proposed future rule has **not** replaced the original criterion.
 
+**Counter-check of the verdicts.** A repeated price could make a caption worse,
+but cannot turn criterion 1 into a failure: that original criterion asks whether
+a card returns. Criterion 4 also does not require varied wording, exact sentence
+count, price or platform. Adding those requirements now would score a different
+test. Conversely, an empty search always returning `[]` cannot sneak through
+criterion 5 because it requires a nonempty result.
 
+**One improvement selected before the after-run.** Add a final self-check to
+`create_fit_card`'s existing prompt: keep the price and platform exactly once,
+including any closing sentence. Leave the model, temperature, adapter, data,
+search, session, scenarios and original scoring rules unchanged.
+
+**Supplemental measurement, separate from graded criteria.** Across the 15 actual
+captions from criteria 1, 3 and 4, count a success only when there is exactly one
+currency amount equal to the selected item's price and exactly one
+case-insensitive occurrence of its platform. `tests/score_unit4.py::price_platform_once`
+implements this same check for both logs. Before: **14/15**; the single failure
+is criterion 1, try 3 above. This diagnostic never changes a five-criterion verdict.
 
 ---
 
