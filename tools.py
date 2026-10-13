@@ -143,7 +143,11 @@ def create_fit_card(outfit: str, new_item: dict) -> str:
         "Identify the item type and at least one accurate distinguishing detail. "
         "Include one specific styling suggestion from the outfit below. Mention "
         "the item's supplied price and platform once each. Be specific about the "
-        "vibe; do not invent facts or brands. Return only the caption.\n"
+        "vibe; do not invent facts or brands. Before returning, silently check "
+        "that the supplied price appears exactly once and the platform name "
+        "appears exactly once in the entire caption. Remove any repeated price "
+        "or platform, including repetitions in a closing sentence. "
+        "Return only the caption.\n"
         "Listing data:\n" + json.dumps(new_item, sort_keys=True, ensure_ascii=False)
         + "\nOutfit advice:\n" + outfit
     )

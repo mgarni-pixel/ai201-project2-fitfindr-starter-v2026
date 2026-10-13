@@ -683,31 +683,233 @@ Astra review, not a claimed classroom or Claude conversation.
 
 ## The Improvement
 
-<!-- What you changed, why your diagnosis pointed at it, and the after-run in
-     the same table format. One change, measured properly.
+**Milestone 5.** Only `tools.py::create_fit_card`'s prompt changed:
 
-     `python run_eval.py --label after` -->
+```text
+Before returning, silently check that the supplied price appears exactly once and the platform name appears exactly once in the entire caption. Remove any repeated price or platform, including repetitions in a closing sentence.
+```
 
-**What I changed:**
-
-**Which failure it was meant to fix:**
+The before-run diagnosis identified the repeated $18/Depop closing sentence.
+The new instruction makes the existing once-each requirement a final check.
+No postprocessor, retry, second MCP tool, or second application change was added.
 
 ### Run Log — After
 
+**Command:** `python run_eval.py --label after`. Same five scenarios, five fresh
+tries each, caching off. 25 real model requests; 14,809 prompt and 3,468 output tokens.
+The captured SHA-256 manifests differ only for `tools.py`: criteria, scenario inputs,
+scoring rules, data, model configuration, adapter, agent and MCP plumbing stayed fixed.
+
 | Criterion | Target | Try 1 | Try 2 | Try 3 | Try 4 | Try 5 | Verdict |
 |---|---|---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |  |  |
+| 1. Full three-tool run returns a fit card | 4 of 5 | PASS | PASS | PASS | PASS | PASS | MET (5/5) |
+| 2. Empty search stops before tool 2 | 5 of 5 | PASS | PASS | PASS | PASS | PASS | MET (5/5) |
+| 3. Selected item reaches suggest_outfit unchanged | 5 of 5 | PASS | PASS | PASS | PASS | PASS | MET (5/5) |
+| 4. Caption grounded in item and outfit | 4 of 5 | PASS | PASS | PASS | PASS | PASS | MET (5/5) |
+| 5. Nonempty search respects the inclusive $20 ceiling | 5 of 5 | PASS | PASS | PASS | PASS | PASS | MET (5/5) |
 
-**Did it help, and how do I know:**
+| Measure | Before | After | Interpretation |
+|---|---|---|---|
+| Criterion 1 (target 4/5) | MET 5/5 | MET 5/5 | Completion retained. |
+| Criterion 2 (target 5/5) | MET 5/5 | MET 5/5 | Empty branch retained. |
+| Criterion 3 (target 5/5) | MET 5/5 | MET 5/5 | Session transfer retained. |
+| Criterion 4 (target 4/5) | MET 5/5 | MET 5/5 | Grounding retained on the fixed item/outfit. |
+| Criterion 5 (target 5/5) | MET 5/5 | MET 5/5 | Budget filter retained. |
+| Supplemental price/platform exactly once | 14/15 captions | 15/15 captions | One observed repetition before, none after. |
 
-<!-- If it made things worse, say that. Honestly reported, that earns full
-     credit and is more interesting than one that worked. -->
+**Did it help?** The measured repetition defect disappeared in this after-run,
+while all original criteria stayed at 5/5. This is evidence of improvement in
+this small sample, not a guarantee or a statistically established causal effect.
+Model variation alone could contribute to the difference; no second change was tried.
 
+[Raw after log](results/run_2026-10-13_033042_UTC_after.md) · [complete records](results/run_2026-10-13_033042_UTC_after.json) ·
+[grounding review](results/unit4_after_grounding.json) · [request counts](results/unit4_after_console.txt).
 
+### Real after-output from one try per criterion
+
+Try 1 values captured by `run_eval.py::run_once`, using the same producers as before.
+
+**Criterion 1**
+
+```text
+Score this super cute Y2K baby tee with a butterfly graphic for just $18.0 on Depop! The fitted, cropped pink, purple, and white top has such a nostalgic vibe. Style it with baggy dark-wash jeans for a classic 2000s streetwear look.
+```
+
+**Criterion 2**
+
+```text
+No matching listings. Try broader keywords, a different size, or a higher price ceiling.
+```
+
+**Criterion 3**
+
+```text
+selected_item = {"id": "lst_007", "title": "Denim Jacket — Light Wash, Cropped", "description": "Cropped denim jacket in a light wash. Great structured shoulders. Blank canvas — no patches or pins but would be perfect to customize.", "category": "outerwear", "style_tags": ["denim", "vintage", "classic", "streetwear"], "size": "S", "condition": "excellent", "price": 42.0, "colors": ["light blue"], "brand": "Wrangler", "platform": "poshmark"}
+suggest_outfit.new_item = {"id": "lst_007", "title": "Denim Jacket — Light Wash, Cropped", "description": "Cropped denim jacket in a light wash. Great structured shoulders. Blank canvas — no patches or pins but would be perfect to customize.", "category": "outerwear", "style_tags": ["denim", "vintage", "classic", "streetwear"], "size": "S", "condition": "excellent", "price": 42.0, "colors": ["light blue"], "brand": "Wrangler", "platform": "poshmark"}
+```
+
+**Criterion 4**
+
+```text
+Item: Y2K Baby Tee — Butterfly Print
+Outfit: Wear the baby tee with baggy straight-leg dark wash jeans and chunky white sneakers; add the black crossbody bag.
+Caption: Score this y2k baby tee with a pink and purple butterfly graphic for just $18.00 on depop! The fitted crop length gives off the ultimate early 2000s vibe. Pair it with baggy straight-leg dark wash jeans for an easy everyday look.
+```
+
+**Criterion 5**
+
+```text
+[
+  {
+    "id": "lst_002",
+    "title": "Y2K Baby Tee — Butterfly Print",
+    "description": "Super cute early 2000s baby tee with butterfly graphic. Fitted crop length. Tag says medium but fits like a small.",
+    "category": "tops",
+    "style_tags": [
+      "y2k",
+      "vintage",
+      "graphic tee",
+      "cottagecore"
+    ],
+    "size": "S/M",
+    "condition": "excellent",
+    "price": 18.0,
+    "colors": [
+      "white",
+      "pink",
+      "purple"
+    ],
+    "brand": null,
+    "platform": "depop"
+  },
+  {
+    "id": "lst_012",
+    "title": "Oversized Crewneck Sweatshirt — Vintage Navy",
+    "description": "Perfectly faded navy crewneck. Genuinely vintage — not manufactured distressed. Ribbed cuffs and hem. No graphics, clean.",
+    "category": "tops",
+    "style_tags": [
+      "vintage",
+      "basics",
+      "oversized",
+      "classic"
+    ],
+    "size": "XL (fits oversized)",
+    "condition": "good",
+    "price": 20.0,
+    "colors": [
+      "navy"
+    ],
+    "brand": null,
+    "platform": "thredUp"
+  },
+  {
+    "id": "lst_014",
+    "title": "Leather Belt — Brown, Braided",
+    "description": "Genuine leather braided belt. Adjustable, multiple holes. Classic Western buckle. Can be dressed up or down.",
+    "category": "accessories",
+    "style_tags": [
+      "vintage",
+      "western",
+      "classic",
+      "earth tones"
+    ],
+    "size": "One Size (adjustable)",
+    "condition": "excellent",
+    "price": 12.0,
+    "colors": [
+      "brown"
+    ],
+    "brand": null,
+    "platform": "thredUp"
+  },
+  {
+    "id": "lst_020",
+    "title": "Henley Long Sleeve — Washed Burgundy",
+    "description": "Soft washed henley in a rich burgundy. Three-button placket. Slightly shrunken/cropped fit. 100% cotton.",
+    "category": "tops",
+    "style_tags": [
+      "vintage",
+      "basics",
+      "earth tones",
+      "classic"
+    ],
+    "size": "M",
+    "condition": "excellent",
+    "price": 16.0,
+    "colors": [
+      "burgundy",
+      "wine"
+    ],
+    "brand": null,
+    "platform": "thredUp"
+  },
+  {
+    "id": "lst_024",
+    "title": "Vintage Polo Shirt — Forest Green",
+    "description": "Classic polo in forest green. Short sleeve, ribbed collar. Slightly boxy. The kind of piece that goes with everything.",
+    "category": "tops",
+    "style_tags": [
+      "vintage",
+      "preppy",
+      "classic",
+      "earth tones"
+    ],
+    "size": "M",
+    "condition": "good",
+    "price": 18.0,
+    "colors": [
+      "green",
+      "forest green"
+    ],
+    "brand": "Ralph Lauren",
+    "platform": "thredUp"
+  },
+  {
+    "id": "lst_033",
+    "title": "Vintage Band Tee — Faded Grey",
+    "description": "Faded grey band-style tee with distressed graphic. Crew neck. Fits boxy. Well-loved but no holes or major damage.",
+    "category": "tops",
+    "style_tags": [
+      "vintage",
+      "grunge",
+      "band tee",
+      "graphic tee",
+      "streetwear"
+    ],
+    "size": "L",
+    "condition": "fair",
+    "price": 19.0,
+    "colors": [
+      "grey",
+      "charcoal"
+    ],
+    "brand": null,
+    "platform": "depop"
+  },
+  {
+    "id": "lst_034",
+    "title": "Bucket Hat — Reversible, Brown Plaid",
+    "description": "Reversible bucket hat — plaid on one side, solid tan on the other. Unstructured brim. One size fits most.",
+    "category": "accessories",
+    "style_tags": [
+      "90s",
+      "streetwear",
+      "vintage",
+      "accessories"
+    ],
+    "size": "One Size",
+    "condition": "excellent",
+    "price": 14.0,
+    "colors": [
+      "brown",
+      "tan",
+      "plaid"
+    ],
+    "brand": null,
+    "platform": "thredUp"
+  }
+]
+```
 
 ---
 
