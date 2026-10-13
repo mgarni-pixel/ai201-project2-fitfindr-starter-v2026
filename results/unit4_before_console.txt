@@ -1,0 +1,47 @@
+  [rate limit] 15 requests used this minute. Waiting 39s. This is normal.
+Cache is OFF for this run — that's deliberate.
+
+matching query completes  (example wardrobe)
+  query: vintage graphic tee under $30, size M
+  try 1: completed — fit card 234 chars
+  try 2: completed — fit card 256 chars
+  try 3: completed — fit card 235 chars
+  try 4: completed — fit card 242 chars
+  try 5: completed — fit card 243 chars
+
+impossible query stops early  (example wardrobe)
+  query: designer ballgown size XXS under $5
+  try 1: stopped early — No matching listings. Try broader keywords, a different size
+  try 2: stopped early — No matching listings. Try broader keywords, a different size
+  try 3: stopped early — No matching listings. Try broader keywords, a different size
+  try 4: stopped early — No matching listings. Try broader keywords, a different size
+  try 5: stopped early — No matching listings. Try broader keywords, a different size
+
+selected item reaches outfit tool  (example wardrobe)
+  query: denim jacket under $50
+  try 1: completed — fit card 326 chars
+  try 2: completed — fit card 295 chars
+  try 3: completed — fit card 322 chars
+  try 4: completed — fit card 281 chars
+  try 5: completed — fit card 282 chars
+
+caption grounded in fixed item and outfit  (example wardrobe)
+  query: fixed caption inputs
+  try 1: completed — fit card 271 chars
+  try 2: completed — fit card 290 chars
+  try 3: completed — fit card 272 chars
+  try 4: completed — fit card 237 chars
+  try 5: completed — fit card 248 chars
+
+inclusive price ceiling  (example wardrobe)
+  query: vintage under $20
+  try 1: completed — fit card 0 chars
+  try 2: completed — fit card 0 chars
+  try 3: completed — fit card 0 chars
+  try 4: completed — fit card 0 chars
+  try 5: completed — fit card 0 chars
+
+Wrote results\run_2026-10-13_032517_UTC_before.md
+25 model calls this session, 14154 prompt + 3373 output tokens
+
+Commit this file. It's the evidence the test actually happened.

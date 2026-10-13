@@ -30,8 +30,10 @@ mode — caching is what usually explains it.
 
 import argparse
 import datetime as dt
+import hashlib
+import json
+import subprocess
 import sys
-import traceback
 
 import config
 import scenarios as scenario_module
@@ -39,8 +41,11 @@ import scenarios as scenario_module
 
 def run_once(scenario, use_trace=True):
     """One scenario, one try. Returns everything worth recording."""
-    from agent import run_agent
-    from utils.data_loader import get_example_wardrobe, get_empty_wardrobe
+    from agent import new_session, run_agent
+    from mcp_client import call_tool
+    from tools import create_fit_card
+    from utils.data_loader import get_example_wardrobe, get_empty_wardrobe, load_listings
+    import generate
     import trace as trace_module
 
     wardrobe = (
@@ -48,17 +53,40 @@ def run_once(scenario, use_trace=True):
     )
 
     if use_trace:
-        trace_module.start_trace()
+        trace_module.start_trace(echo=False)
 
     record = {"error": None, "session": None, "trace": "", "crashed": None}
+    calls_before = generate.call_count()
+    tokens_before = generate.token_counts()
     try:
-        record["session"] = run_agent(scenario["query"], wardrobe)
+        mode = scenario["mode"]
+        if mode == "agent":
+            record["session"] = run_agent(scenario["query"], wardrobe)
+        elif mode == "card":
+            session = new_session(scenario["query"], wardrobe)
+            session["selected_item"] = next(item for item in load_listings() if item["id"] == scenario["item_id"])
+            session["outfit_suggestion"] = scenario["outfit"]
+            inputs = {"outfit": session["outfit_suggestion"], "new_item": session["selected_item"]}
+            session["fit_card"] = create_fit_card(**inputs)
+            trace_module.step("create_fit_card", inputs=inputs, returned=session["fit_card"])
+            record["session"] = session
+        elif mode == "search":
+            session = new_session(scenario["query"], wardrobe)
+            session["parsed"] = scenario["arguments"]
+            session["search_results"] = call_tool("search_listings", scenario["arguments"])
+            trace_module.step("search_listings (via MCP)", inputs=scenario["arguments"], returned=session["search_results"])
+            record["session"] = session
+        else:
+            raise ValueError("Unknown scenario mode")
     except Exception as exc:  # noqa: BLE001 — a crash is a result worth logging
-        record["crashed"] = f"{type(exc).__name__}: {exc}"
-        record["traceback"] = traceback.format_exc()
+        record["crashed"] = type(exc).__name__
+        record["error"] = "Scenario failed; exception type recorded without private provider details."
 
     if use_trace:
         record["trace"] = trace_module.get_trace()
+        record["steps"] = trace_module.get_steps()
+    record["model_calls"] = generate.call_count() - calls_before
+    record["tokens"] = {key: value - tokens_before[key] for key, value in generate.token_counts().items()}
 
     return record
 
@@ -67,7 +95,8 @@ def main():
     parser = argparse.ArgumentParser(description="Run the scenarios and log the results.")
     parser.add_argument("--tries", "--trials", type=int, default=5, dest="tries",
                         help="tries per scenario (default 5, matching your criteria)")
-    parser.add_argument("--label", default="", help="a name for this run, e.g. 'before'")
+    parser.add_argument("--label", default="", choices=["", "before", "after"],
+                        help="a name for this run, e.g. 'before'")
     args = parser.parse_args()
 
     problems = scenario_module.validate()
@@ -81,6 +110,8 @@ def main():
         print("scenarios.py is empty. Milestone 3 starts by filling it in.", file=sys.stderr)
         sys.exit(1)
 
+    if args.tries < 1:
+        parser.error("tries must be positive")
     if args.tries < 5:
         print(f"⚠️  {args.tries} tries. Your criteria are written out of five.\n")
 
@@ -116,9 +147,23 @@ def main():
 
 def write_report(rows, args):
     config.RESULTS_DIR.mkdir(exist_ok=True)
-    stamp = dt.datetime.now().strftime("%Y-%m-%d_%H%M")
+    now = dt.datetime.now(dt.timezone.utc)
+    stamp = now.strftime("%Y-%m-%d_%H%M%S_UTC")
     label = f"_{args.label}" if args.label else ""
     path = config.RESULTS_DIR / f"run_{stamp}{label}.md"
+    source_files = ["agent.py", "tools.py", "mcp_server.py", "mcp_client.py", "generate.py",
+                    "config.py", "trace.py", "scenarios.py", "criteria.md", "run_eval.py",
+                    "docs/UNIT4_SCORING.md", "data/listings.json", "data/wardrobe_schema.json"]
+    evidence = {
+        "label": args.label, "when_utc": now.isoformat(), "tries": args.tries,
+        "model": config.MODEL, "temperature": config.TEMPERATURE,
+        "cache_enabled": config.CACHE_ENABLED,
+        "head_before_run": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+        "source_sha256": {name: hashlib.sha256((config.ROOT / name).read_bytes()).hexdigest()
+                          for name in source_files},
+        "rows": rows,
+    }
+    path.with_suffix(".json").write_text(json.dumps(evidence, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     n = args.tries
     headers = " | ".join(f"Try {i}" for i in range(1, n + 1))
@@ -131,7 +176,9 @@ def write_report(rows, args):
         "- Loop: `agent.py::run_agent` · tools: `tools.py`",
         f"- Tries per scenario: {n}, caching off",
         f"- Temperature: {config.TEMPERATURE}",
-        f"- When: {dt.datetime.now().strftime('%Y-%m-%d %H:%M')}",
+        f"- Model: {config.MODEL}",
+        f"- When (UTC): {now.isoformat()}",
+        f"- Complete sessions, actual input snapshots and request counts: `{path.with_suffix('.json').name}`",
         "",
         "Paste the table below into your README. Fill in the Criterion and",
         "Target columns from `criteria.md`, then mark each try PASS or FAIL",
@@ -191,6 +238,7 @@ def write_report(rows, args):
                 f"- selected_item: {item.get('title', '(none)')}"
                 + (f" (${item.get('price')}, {item.get('platform')})" if item else ""),
                 f"- search_results: {len(session.get('search_results') or [])}",
+                f"- actual model requests: {record['model_calls']}; tokens: {record['tokens']}",
                 "",
             ]
             if session.get("outfit_suggestion"):
@@ -201,7 +249,7 @@ def write_report(rows, args):
             if record["trace"]:
                 lines += ["Trace:", "", "```", record["trace"], "```", ""]
 
-    path.write_text("\n".join(lines), encoding="utf-8")
+    path.write_text("\n".join(line.rstrip() for line in lines).rstrip() + "\n", encoding="utf-8")
 
     import generate
 

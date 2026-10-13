@@ -1,0 +1,137 @@
+{
+  "source": "run_2026-10-13_032517_UTC_before.json",
+  "scores": [
+    {
+      "criterion": 1,
+      "passes": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "verdict": "MET (5/5)"
+    },
+    {
+      "criterion": 2,
+      "passes": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "verdict": "MET (5/5)"
+    },
+    {
+      "criterion": 3,
+      "passes": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "verdict": "MET (5/5)"
+    },
+    {
+      "criterion": 4,
+      "passes": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "verdict": "MET (5/5)"
+    },
+    {
+      "criterion": 5,
+      "passes": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "verdict": "MET (5/5)"
+    }
+  ],
+  "supplemental": [
+    {
+      "criterion": 1,
+      "attempt": 1,
+      "price_platform_once": true
+    },
+    {
+      "criterion": 1,
+      "attempt": 2,
+      "price_platform_once": true
+    },
+    {
+      "criterion": 1,
+      "attempt": 3,
+      "price_platform_once": false
+    },
+    {
+      "criterion": 1,
+      "attempt": 4,
+      "price_platform_once": true
+    },
+    {
+      "criterion": 1,
+      "attempt": 5,
+      "price_platform_once": true
+    },
+    {
+      "criterion": 3,
+      "attempt": 1,
+      "price_platform_once": true
+    },
+    {
+      "criterion": 3,
+      "attempt": 2,
+      "price_platform_once": true
+    },
+    {
+      "criterion": 3,
+      "attempt": 3,
+      "price_platform_once": true
+    },
+    {
+      "criterion": 3,
+      "attempt": 4,
+      "price_platform_once": true
+    },
+    {
+      "criterion": 3,
+      "attempt": 5,
+      "price_platform_once": true
+    },
+    {
+      "criterion": 4,
+      "attempt": 1,
+      "price_platform_once": true
+    },
+    {
+      "criterion": 4,
+      "attempt": 2,
+      "price_platform_once": true
+    },
+    {
+      "criterion": 4,
+      "attempt": 3,
+      "price_platform_once": true
+    },
+    {
+      "criterion": 4,
+      "attempt": 4,
+      "price_platform_once": true
+    },
+    {
+      "criterion": 4,
+      "attempt": 5,
+      "price_platform_once": true
+    }
+  ]
+}

@@ -310,28 +310,213 @@ I also asked Codex to check that the README included a full query/output and thr
 
 ## Run Log — Before
 
-<!-- Five criteria, five tries each, in this exact format.
-
-     Five, because your criteria are written out of five. Mark each try PASS
-     or FAIL, count the passes, and read that count against your target — a
-     row targeting 4 of 5 with three PASS cells is MISSED (3/5).
-
-     `python run_eval.py --label before` runs everything and writes the table
-     into results/. Paste it here and fill in the verdicts. -->
+**Milestone 3.** Command: `python run_eval.py --label before`. Five independent
+attempts per criterion (25 scenario runs), cache off, unchanged original targets.
+The run made 25 real Gemini requests: 10 for criterion 1, 10 for criterion 3,
+5 for criterion 4, and none for the deterministic criteria 2 and 5.
+Usage: 14,154 prompt tokens and 3,373 output tokens. No scored attempt was discarded.
 
 | Criterion | Target | Try 1 | Try 2 | Try 3 | Try 4 | Try 5 | Verdict |
 |---|---|---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |  |  |
+| 1. Full three-tool run returns a fit card | 4 of 5 | PASS | PASS | PASS | PASS | PASS | MET (5/5) |
+| 2. Empty search stops before tool 2 | 5 of 5 | PASS | PASS | PASS | PASS | PASS | MET (5/5) |
+| 3. Selected item reaches suggest_outfit unchanged | 5 of 5 | PASS | PASS | PASS | PASS | PASS | MET (5/5) |
+| 4. Caption grounded in item and outfit | 4 of 5 | PASS | PASS | PASS | PASS | PASS | MET (5/5) |
+| 5. Nonempty search respects the inclusive $20 ceiling | 5 of 5 | PASS | PASS | PASS | PASS | PASS | MET (5/5) |
 
-**Real output from one try**, pasted as text, naming the file and function
-that produced it:
+Rules were fixed in [UNIT4_SCORING.md](docs/UNIT4_SCORING.md) before the run.
+Criterion 4 was read against the actual item and outfit, with supporting quotes
+saved in [the grounding review](results/unit4_before_grounding.json).
+The other four criteria are checked against full sessions and actual call snapshots.
 
+[Raw run log](results/run_2026-10-13_032517_UTC_before.md) · [complete records](results/run_2026-10-13_032517_UTC_before.json) ·
+[console and request counts](results/unit4_before_console.txt) · [32 passing tests](results/unit4_milestone3_tests.txt).
+
+### Real output from one try per criterion
+
+These are actual values from try 1 of each scenario, captured by
+`run_eval.py::run_once`. No text was invented to fill the table.
+
+**Criterion 1 — `agent.py::run_agent → tools.py::create_fit_card`**
+
+```text
+Score! Found this Y2K baby tee featuring a cute pink and purple butterfly graphic on Depop for $18. It has that classic fitted crop length and an early 2000s vibe. I'm styling it with baggy dark-wash jeans for an easy streetwear look.
 ```
 
+**Criterion 2 — `agent.py::run_agent (empty-search branch)`**
+
+```text
+No matching listings. Try broader keywords, a different size, or a higher price ceiling.
+```
+
+**Criterion 3 — `agent.py::run_agent → tools.py::suggest_outfit (actual argument)`**
+
+```text
+selected_item = {"id": "lst_007", "title": "Denim Jacket — Light Wash, Cropped", "description": "Cropped denim jacket in a light wash. Great structured shoulders. Blank canvas — no patches or pins but would be perfect to customize.", "category": "outerwear", "style_tags": ["denim", "vintage", "classic", "streetwear"], "size": "S", "condition": "excellent", "price": 42.0, "colors": ["light blue"], "brand": "Wrangler", "platform": "poshmark"}
+suggest_outfit.new_item = {"id": "lst_007", "title": "Denim Jacket — Light Wash, Cropped", "description": "Cropped denim jacket in a light wash. Great structured shoulders. Blank canvas — no patches or pins but would be perfect to customize.", "category": "outerwear", "style_tags": ["denim", "vintage", "classic", "streetwear"], "size": "S", "condition": "excellent", "price": 42.0, "colors": ["light blue"], "brand": "Wrangler", "platform": "poshmark"}
+```
+
+**Criterion 4 — `tools.py::create_fit_card (fixed item/outfit input)`**
+
+```text
+Item: Y2K Baby Tee — Butterfly Print
+Outfit: Wear the baby tee with baggy straight-leg dark wash jeans and chunky white sneakers; add the black crossbody bag.
+Caption: Scored this early 2000s white, pink, and purple baby tee on Depop for $18, and it features the cutest butterfly graphic. It gives off major retro vibes in excellent condition. Pair it with baggy straight-leg dark wash jeans and chunky sneakers for an easy, nostalgic fit.
+```
+
+**Criterion 5 — `mcp_server.py::search_listings → tools.py::search_listings`**
+
+```text
+[
+  {
+    "id": "lst_002",
+    "title": "Y2K Baby Tee — Butterfly Print",
+    "description": "Super cute early 2000s baby tee with butterfly graphic. Fitted crop length. Tag says medium but fits like a small.",
+    "category": "tops",
+    "style_tags": [
+      "y2k",
+      "vintage",
+      "graphic tee",
+      "cottagecore"
+    ],
+    "size": "S/M",
+    "condition": "excellent",
+    "price": 18.0,
+    "colors": [
+      "white",
+      "pink",
+      "purple"
+    ],
+    "brand": null,
+    "platform": "depop"
+  },
+  {
+    "id": "lst_012",
+    "title": "Oversized Crewneck Sweatshirt — Vintage Navy",
+    "description": "Perfectly faded navy crewneck. Genuinely vintage — not manufactured distressed. Ribbed cuffs and hem. No graphics, clean.",
+    "category": "tops",
+    "style_tags": [
+      "vintage",
+      "basics",
+      "oversized",
+      "classic"
+    ],
+    "size": "XL (fits oversized)",
+    "condition": "good",
+    "price": 20.0,
+    "colors": [
+      "navy"
+    ],
+    "brand": null,
+    "platform": "thredUp"
+  },
+  {
+    "id": "lst_014",
+    "title": "Leather Belt — Brown, Braided",
+    "description": "Genuine leather braided belt. Adjustable, multiple holes. Classic Western buckle. Can be dressed up or down.",
+    "category": "accessories",
+    "style_tags": [
+      "vintage",
+      "western",
+      "classic",
+      "earth tones"
+    ],
+    "size": "One Size (adjustable)",
+    "condition": "excellent",
+    "price": 12.0,
+    "colors": [
+      "brown"
+    ],
+    "brand": null,
+    "platform": "thredUp"
+  },
+  {
+    "id": "lst_020",
+    "title": "Henley Long Sleeve — Washed Burgundy",
+    "description": "Soft washed henley in a rich burgundy. Three-button placket. Slightly shrunken/cropped fit. 100% cotton.",
+    "category": "tops",
+    "style_tags": [
+      "vintage",
+      "basics",
+      "earth tones",
+      "classic"
+    ],
+    "size": "M",
+    "condition": "excellent",
+    "price": 16.0,
+    "colors": [
+      "burgundy",
+      "wine"
+    ],
+    "brand": null,
+    "platform": "thredUp"
+  },
+  {
+    "id": "lst_024",
+    "title": "Vintage Polo Shirt — Forest Green",
+    "description": "Classic polo in forest green. Short sleeve, ribbed collar. Slightly boxy. The kind of piece that goes with everything.",
+    "category": "tops",
+    "style_tags": [
+      "vintage",
+      "preppy",
+      "classic",
+      "earth tones"
+    ],
+    "size": "M",
+    "condition": "good",
+    "price": 18.0,
+    "colors": [
+      "green",
+      "forest green"
+    ],
+    "brand": "Ralph Lauren",
+    "platform": "thredUp"
+  },
+  {
+    "id": "lst_033",
+    "title": "Vintage Band Tee — Faded Grey",
+    "description": "Faded grey band-style tee with distressed graphic. Crew neck. Fits boxy. Well-loved but no holes or major damage.",
+    "category": "tops",
+    "style_tags": [
+      "vintage",
+      "grunge",
+      "band tee",
+      "graphic tee",
+      "streetwear"
+    ],
+    "size": "L",
+    "condition": "fair",
+    "price": 19.0,
+    "colors": [
+      "grey",
+      "charcoal"
+    ],
+    "brand": null,
+    "platform": "depop"
+  },
+  {
+    "id": "lst_034",
+    "title": "Bucket Hat — Reversible, Brown Plaid",
+    "description": "Reversible bucket hat — plaid on one side, solid tan on the other. Unstructured brim. One size fits most.",
+    "category": "accessories",
+    "style_tags": [
+      "90s",
+      "streetwear",
+      "vintage",
+      "accessories"
+    ],
+    "size": "One Size",
+    "condition": "excellent",
+    "price": 14.0,
+    "colors": [
+      "brown",
+      "tan",
+      "plaid"
+    ],
+    "brand": null,
+    "platform": "thredUp"
+  }
+]
 ```
 
 ---

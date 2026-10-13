@@ -1,0 +1,58 @@
+{
+  "run": "run_2026-10-13_032517_UTC_before.json",
+  "reviewer": "Astra; student review remains available",
+  "criterion": 4,
+  "method": "Read each complete caption against the fixed listing and outfit, applying the original criterion only.",
+  "tries": [
+    {
+      "attempt": 1,
+      "pass": true,
+      "quotes": [
+        "baby tee",
+        "butterfly graphic",
+        "baggy straight-leg dark wash jeans"
+      ],
+      "reason": "Identifies the tee, names an accurate listing detail, and includes a specific styling suggestion present in the supplied outfit."
+    },
+    {
+      "attempt": 2,
+      "pass": true,
+      "quotes": [
+        "baby tee",
+        "fitted crop length",
+        "chunky white sneakers"
+      ],
+      "reason": "Identifies the tee, names an accurate listing detail, and includes a specific styling suggestion present in the supplied outfit."
+    },
+    {
+      "attempt": 3,
+      "pass": true,
+      "quotes": [
+        "baby tee",
+        "butterfly graphic",
+        "baggy straight-leg dark wash jeans"
+      ],
+      "reason": "Identifies the tee, names an accurate listing detail, and includes a specific styling suggestion present in the supplied outfit."
+    },
+    {
+      "attempt": 4,
+      "pass": true,
+      "quotes": [
+        "baby tee",
+        "pink and purple butterfly graphic",
+        "baggy straight-leg dark wash jeans"
+      ],
+      "reason": "Identifies the tee, names an accurate listing detail, and includes a specific styling suggestion present in the supplied outfit."
+    },
+    {
+      "attempt": 5,
+      "pass": true,
+      "quotes": [
+        "baby tee",
+        "white, pink, and purple butterfly graphic",
+        "baggy straight-leg dark wash jeans"
+      ],
+      "reason": "Identifies the tee, names an accurate listing detail, and includes a specific styling suggestion present in the supplied outfit."
+    }
+  ]
+}
