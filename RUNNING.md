@@ -246,3 +246,50 @@ history is what shows your criteria existed before your results did.
 units.
 
 `results/` is deliberately **not** in `.gitignore`.
+
+
+## This completed Unit 4 version
+
+Search is implemented and registered as the only local MCP tool. Both model tools
+are implemented. The original starter troubleshooting rows above describe several
+unbuilt states; they are not the current project status.
+
+After activating `.venv`, inspect or reproduce the work with:
+
+```powershell
+python mcp_client.py
+python app.py ask 'vintage graphic tee under $30, size M' --trace
+python -m unittest discover -v
+python -m tests.unit4_failure_runs
+python run_eval.py --label before
+python run_eval.py --label after
+```
+
+The failure runner changes one key character only for a child process and verifies
+that `.env` stays unchanged. Every child has a timeout. It performs real requests;
+`--case empty_search`, `--case empty_wardrobe`, `--case model_unavailable`, or
+`--case full_trace` runs only that case.
+
+Each evaluation runs five scenarios five times, with caching disabled, and writes
+both Markdown and complete JSON evidence with a UTC timestamp. For these scenarios,
+expect 25 model requests per round. Keep the starter's pacing and budget settings.
+The fixed-card and direct-search scenarios exercise exactly what criteria 4 and 5
+specify; the other three scenarios exercise the full agent.
+
+The checked-in before log was captured before the one prompt change; the after log
+was captured afterward. Running both labels on today's code does **not** recreate
+the historical before implementation. Use the recorded source hashes and milestone
+history to distinguish versions, and do not relabel new results as the original run.
+
+To reproduce the checked-in scoring without any model request:
+
+```powershell
+python -m tests.score_unit4 results/run_2026-10-13_032517_UTC_before.json results/unit4_before_grounding.json
+python -m tests.score_unit4 results/run_2026-10-13_033042_UTC_after.json results/unit4_after_grounding.json
+```
+
+Grounding review files contain explicit per-caption judgments and supporting
+quotes. They are not an automatic semantic grader. For a new run, read each new
+caption against its actual inputs and create its own review file before scoring.
+The original `criteria.md` and scoring rules must remain intact for comparisons.
+The How I Used AI section includes the approved Unit 4 update.

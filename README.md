@@ -21,14 +21,12 @@
 
 ## Unit 4: Testing continuation
 
-This new repository preserves the complete Part 1 history from
-[mgarni-pixel/ai201-project2-fitfindr-starter-v2026](https://github.com/mgarni-pixel/ai201-project2-fitfindr-starter-v2026),
-through `71e616a2122be08e3e291dcf2c7abb7507ba9e11`. The original criteria were
-committed at `73d22e2e521616fd5d3ed37285538ab7b6d7e70b` and remain unchanged.
-A new repository was explicitly requested; the course asks for the original
-URL, so this new destination is a submission deviation. The original repository
-has not been changed. The **How I Used AI** section is reserved for the user's
-Unit 4 update and retains its previous text.
+This Unit 4 continuation preserves the complete Part 1 history through
+`71e616a2122be08e3e291dcf2c7abb7507ba9e11`. Submit the same repository URL:
+[mgarni-pixel/ai201-project2-fitfindr-starter-v2026](https://github.com/mgarni-pixel/ai201-project2-fitfindr-starter-v2026).
+The original criteria were committed at
+`73d22e2e521616fd5d3ed37285538ab7b6d7e70b` and remain unchanged.
+The **How I Used AI** section includes the approved Unit 4 update.
 
 **Milestone 1:** `search_listings` is the only MCP tool. `agent.py::run_agent`
 uses `mcp_client.call_tool`; the two Gemini tools remain direct calls.
@@ -297,9 +295,11 @@ Complete commands and actual outputs, including all three repeated captions:
 
 ## How I Used AI
 
-I asked Codex to build the three tools and planning loop and test the implementation. It produced the code, specifications, sample outputs, and five milestone commits. My code review and further revisions are still pending.
+I asked Codex to build the three tools and planning loop and test the implementation. It produced the code, specifications, sample outputs, and five milestone commits.
 
 I also asked Codex to check that the README included a full query/output and three individual tool tests. It compared those examples with the saved logs and confirmed they were already present. I supplied the four-sentence app description, which Codex inserted without changing my wording.
+
+I asked Codex to move the search tool onto MCP, add failure handling and a loop trace, and test each of my five original criteria five times before and after one improvement. It produced the code changes, run logs, verdicts, diagnoses, and six milestone commits. It revised the caption prompt after one result repeated the price and platform, then measured whether that change helped.
 
 <!-- ═══════════════════════ UNIT 4 — THE TEST ═══════════════════════
 
@@ -915,11 +915,36 @@ Caption: Score this y2k baby tee with a pink and purple butterfly graphic for ju
 
 ## What's Still Broken
 
-<!-- For each criterion still missed: what you'd do, and why you stopped where
-     you did. "I ran out of time" is fine if it's true. Pretending nothing is
-     left is not. -->
+**Milestone 6.** No original criterion remains missed: all five are MET at 5/5
+both before and after. That does not mean the agent is generally error-free.
 
+- **Limited input coverage:** only two matching agent queries, one impossible
+  query, one fixed item/outfit and one price ceiling were evaluated. Next, test
+  multiple sizes, nullable brands, different item categories and several price
+  boundaries. The present comparison intentionally keeps inputs fixed.
+- **Prompt adherence is still probabilistic:** the once-each defect was absent
+  in the 15 after-captions, but a prompt self-check does not enforce a schema.
+  A future change could validate output or normalize repeated facts. It was not
+  added because this unit measures one change only.
+- **Service exhaustion is not fully covered:** the actual invalid-key path is
+  handled at either model tool, but an exhausted rate-limit retry in the unchanged
+  starter adapter can still raise `RuntimeError`. That case was not triggered in
+  the scored runs. A future focused failure test and handler would address it.
+- **MCP overhead:** the starter starts a local server for each call. No latency
+  benchmark or persistent-connection optimization was attempted in this unit.
 
+The final deterministic suite passed **32 tests**; real MCP transport is exercised
+by its integration tests, while model doubles are explicitly limited to unit tests.
+Both evaluation rounds made real model requests with caching off. Their JSON files
+preserve complete sessions, call snapshots, usage counts and source hashes.
+Markdown presentation removes trailing whitespace only; JSON preserves returned
+strings exactly. Full check output: [final tests](results/unit4_final_tests.txt) and
+[evidence/safety audit](results/unit4_validation.txt).
+
+The original criteria are unchanged. The **How I Used AI** section includes the
+approved Unit 4 paragraph. Submit the same repository URL used for Part 1:
+[mgarni-pixel/ai201-project2-fitfindr-starter-v2026](https://github.com/mgarni-pixel/ai201-project2-fitfindr-starter-v2026).
+Nothing was submitted to the course portal automatically.
 
 <!-- ═════════════════════════════════════════════════════════════════════
 
@@ -938,18 +963,18 @@ Caption: Score this y2k baby tee with a pink and purple butterfly graphic for ju
 
      SUBMISSION CHECKLIST — unit 4
 
-       [ ] mcp_server.py exists with one tool registered
+       [x] mcp_server.py exists with one tool registered
            (or a written record of exactly where the rewire broke)
-       [ ] Run Log — Before, five criteria, five tries each
-       [ ] Real output pasted underneath, naming file and function
-       [ ] A verdict on every criterion
-       [ ] A diagnosis for every miss, naming a place AND a mechanism
-       [ ] Loop Trace, with the MCP call visible in it
-       [ ] All three failure modes triggered and handled
-       [ ] One improvement, with Run Log — After in the same format
-       [ ] What's Still Broken
-       [ ] At least four new commits
-       [ ] The SAME repository URL as last unit
+       [x] Run Log — Before, five criteria, five tries each
+       [x] Real output pasted underneath, naming file and function
+       [x] A verdict on every criterion
+       [x] A diagnosis for every miss, naming a place AND a mechanism
+       [x] Loop Trace, with the MCP call visible in it
+       [x] All three failure modes triggered and handled
+       [x] One improvement, with Run Log — After in the same format
+       [x] What's Still Broken
+       [x] At least four new commits
+       [x] The SAME repository URL as last unit
 
      Do not delete and recreate this repository. Your commit history is what
      shows your criteria existed before your results did.

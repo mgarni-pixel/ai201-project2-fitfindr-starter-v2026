@@ -1,10 +1,10 @@
 # FitFindr Unit 4 milestone plan
 
 Continue Part 1 at `71e616a2122be08e3e291dcf2c7abb7507ba9e11`, preserving all
-history and the original `criteria.md`. The requested new destination is
-`mgarni-pixel/ai201-project4-fitfindr-testing`, branch `codex/unit4-testing`.
-The course asks for the previous URL; the new destination is a user-requested
-exception, not a claim that this submission satisfies the same-URL rule.
+history and the original `criteria.md`. Work initially went to the requested
+new repository, `mgarni-pixel/ai201-project4-fitfindr-testing`. The final submission
+uses the original `mgarni-pixel/ai201-project2-fitfindr-starter-v2026` repository
+on `codex/unit4-submission`, satisfying the course's same-URL requirement.
 
 ## Contract and scope
 
@@ -17,9 +17,11 @@ exception, not a claim that this submission satisfies the same-URL rule.
 - Keep five original criteria and thresholds; five fresh tries per criterion
   before and after one improvement, caching disabled. Never substitute mocks
   for recorded model trials. Test doubles are limited to labeled unit tests.
-- Preserve `How I Used AI` exactly. Its Unit 4 update belongs to the user.
+- Append only the user-approved Unit 4 paragraph to `How I Used AI`, and remove
+  the outdated pending-review sentence as requested.
 - No stretch features, deployments, changes to other repositories, secret output,
-  committed environments/caches, rewritten history or automatic submission.
+  committed environments/caches or automatic submission. The user authorized
+  replacing milestone 6; milestones 1–5 and the entire Part 1 history stay intact.
 
 ## Dependency-ordered milestones
 
@@ -35,7 +37,7 @@ exception, not a claim that this submission satisfies the same-URL rule.
 5. Make one change justified by the diagnosis. Freeze scenario/scoring definitions
    between runs, repeat all five criteria five times, compare honestly, and commit.
 6. Finish remaining-limits and MCP write-up, verify evidence and preserved history,
-   then commit and push the milestones. Leave AI reflection to the user.
+   then commit and push the milestones with the approved AI-use update.
 
 ## Ownership and acceptance
 
@@ -44,3 +46,14 @@ by the user. Each milestone is validated and committed before the next begins.
 Use the supplied setup check, Python unit tests, real MCP checks and relevant live
 runs; `git diff --check` at each boundary. A blocked real run is recorded honestly,
 never marked complete or replaced by invented evidence.
+
+
+## Completion record
+
+Milestones 1–5 were validated and committed in dependency order. Milestone 6
+finishes the limitations, reproduction instructions and delivery checks. All
+original criteria were MET at 5/5 before and after; a separate once-each
+price/platform check improved from 14/15 to 15/15 captions. The comparison records
+50 scenario trials and 50 actual model requests in total. No stretch feature or
+second application improvement was added. The approved AI-use paragraph is
+appended; final course submission remains with the user.

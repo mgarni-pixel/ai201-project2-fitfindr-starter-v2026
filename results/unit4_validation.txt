@@ -1,0 +1,16 @@
+Initial validation, before the user-approved AI-use update:
+PASS: original criteria and How I Used AI unchanged.
+PASS: before has 25 real trials, 25 actual model requests, all original criteria 5/5.
+PASS: after has 25 real trials, 25 actual model requests, all original criteria 5/5.
+PASS: source fingerprints and exact scenario inputs agree; only tools.py changed between rounds.
+PASS: separate price/platform-once result is 14/15 before, 15/15 after.
+PASS: every relative README evidence link resolves.
+PASS: all changed/new files scanned; no key matches, local absolute paths or generated environments; source sizes <=650 lines.
+PASS: git diff --check. Final unittest suite: 32 passed; compileall passed.
+
+User-approved Milestone 6 revision validation:
+PASS: Approved Unit 4 AI paragraph added exactly once; the unapproved second paragraph was not added.
+PASS: Outdated pending-review sentence removed; earlier AI-use wording otherwise preserved.
+PASS: Original criteria, application code, dependencies and raw evaluation records unchanged.
+PASS: After-run source fingerprints still match; README evidence links resolve.
+PASS: Milestones 1-5 preserved; milestone 6 reopened at the user request.
